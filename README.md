@@ -2,8 +2,8 @@
 This holds the static files used by the Tsugi framework.  This is shared between the
 Tsugi implementations in various languages.
 
-You can check this out locally into the ht docs folder next to your Tsugi
-developer console or just use the version stored in the CloudFlare CDN at:
+You can check this out locally into the htdocs folder next to your Tsugi
+developer console (/tsugi) or just use the copy stored in the CloudFlare CDN at:
 
     https://www.dr-chuck.net/tsugi-static
     
