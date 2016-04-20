@@ -1,13 +1,18 @@
-# tsugi-static
-This holds the static files used by the Tsugi framework
 
-If this has been pulled into a subtree in a project like tsugi-php - to
-pull subtree updates in, use a command like this:
+This holds the static files used by the Tsugi framework.  This is shared between the
+Tsugi implementations in various languages.
 
-    git subtree pull --prefix=static https://github.com/csev/tsugi-static master
-    git push origin master
+You can check this out locally into the ht docs folder next to your Tsugi
+developer console or just use the version stored in the CloudFlare CDN at:
 
-All of the forks of tsugi-php will get new static code with a
-simple "git pull" since they only see that something in the "static"
-folder changed.
+    https://www.dr-chuck.net/tsugi-static
+    
+If you don't specify the `staticroot` in `config.php` it will use the above
+URL to serve static content.  If you want to serve it locally if you are on 
+a plane or behind a firewall check it out and then set the configuration similar
+to the following:
 
+    $CFG->staticroot = 'http://localhost/tsugi-static';  /// For normal
+    $CFG->staticroot = 'http://localhost:8888/tsugi-static';   // For MAMP
+
+Or something similar.
