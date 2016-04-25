@@ -14,6 +14,6 @@ to the following:
 
     $CFG->staticroot = 'http://localhost/tsugi-static';  /// For normal
     $CFG->staticroot = 'http://localhost:8888/tsugi-static';   // For MAMP
-    $CFG->staticroot = "https://tsugi.mylearn.com/tsugi-static"; 
+    $CFG->staticroot = "https://www.my-awesome-learning-tool.com/tsugi-static"; 
 
 Or something similar.
