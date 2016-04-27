@@ -29,9 +29,9 @@ URL to serve static content.  If you want to serve it locally if you are on
 a plane or behind a firewall check it out and then set the configuration similar
 to the following:
 <pre>
-    $CFG->staticroot = 'http://localhost/tsugi-static';  /// For normal
-    $CFG->staticroot = 'http://localhost:8888/tsugi-static';   // For MAMP
-    $CFG->staticroot = "https://www.my-awesome-learning-tool.com/tsugi-static"; 
+    $CFG-&gt;staticroot = $CFV-&gt;wwwroot . '/../tsugi-static';  // Relative
+    $CFG-&gt;staticroot = 'http://localhost/tsugi-static';  // Absolute
+    $CFG-&gt;staticroot = 'http://localhost:8888/tsugi-static';   // MAMP
 </pre>
 Or something similar.
 </p>
