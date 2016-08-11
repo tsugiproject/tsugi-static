@@ -1,9 +1,6 @@
 // The scripts for the TSUGI runtime
 // Needs to be loaded at the end after JQuery is loaded
 
-// Make sure console.log does not fail.
-if(typeof console === "undefined") { var console = { log: function (logMsg) { } }; }
-
 // Send the CRF token on all of the non-ajax() calls
 $.ajaxSetup({
     cache: false,
@@ -11,16 +8,6 @@ $.ajaxSetup({
         'X-CSRF-Token' : CSRF_TOKEN
     }
 });
-
-function dataToggle(divName) {
-    var ele = document.getElementById(divName);
-    if(ele.style.display == "block") {
-        ele.style.display = "none";
-    }
-    else {
-        ele.style.display = "block";
-    }
-}
 
 function doHeartBeat() {
     window.console && console.log('Calling heartbeat to extend session');
@@ -37,13 +24,6 @@ function doHeartBeat() {
     });
 }
 
-// https://gist.github.com/flesch/315070
-function sprintf(){
-    var args = Array.prototype.slice.call(arguments);
-    return args.shift().replace(/%s/g, function(){
-        return args.shift();
-    });
-}
 
 var DE_BOUNCE_LTI_FRAME_RESIZE_TIMER = false;
 var DE_BOUNCE_LTI_FRAME_RESIZE_HEIGHT = false;
