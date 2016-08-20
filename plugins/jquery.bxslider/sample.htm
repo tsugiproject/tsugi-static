@@ -1,0 +1,36 @@
+<html>
+<head>
+  <link rel="stylesheet" href="jquery.bxslider.css" type="text/css" />
+</head>
+<body>
+
+<p>
+<ul class="bxslider">
+  <li>
+    <iframe src="http://player.vimeo.com/video/17914974" width="500" height="281" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+  </li>
+  <li>
+    <iframe width="500" height="281" src="https://www.youtube.com/embed/1SQ4eAeVV4Y?list=PLlRFEj9H3Oj4qyq0OLZ76cMtUUgqUNtmz" frameborder="0" allowfullscreen></iframe>
+  </li>
+  <li>
+    <iframe src="http://player.vimeo.com/video/17230728" width="500" height="281" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+  </li>
+</ul>
+</p>
+
+<script   src="https://code.jquery.com/jquery-1.12.4.js"   integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="   crossorigin="anonymous"></script>  
+<script src="plugins/jquery.fitvids.js"></script>
+<script src="jquery.bxslider.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    
+$('.bxslider').bxSlider({
+  video: true,
+  useCSS: false,
+  adaptiveHeight: false,
+  slideWidth: "350px",
+  maxSlides: 2
+});
+  });
+</script>
+</body>
