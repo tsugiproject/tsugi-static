@@ -179,6 +179,23 @@ function modalDialogWidth() {
     return Math.round(dWidth);
 }
 
+// If the enclosing modal is content from the background document
+function showModal(title, modalId) {
+console.log("showModalIframe "+modalId);
+    $("#"+modalId).dialog({
+        title: title,
+        width: modalDialogWidth(),
+        position: { my: "center top+30px", at: "center top+30px", of: window },
+        modal: true,
+        draggable: false
+    });
+
+    $(window).resize(function() {
+        $("#"+modalId).dialog("option", "width", modalDialogWidth());
+    });
+}
+
+// If the enclosing modal contains an iframe
 function showModalIframe(title, modalId, iframeId, spinnerUrl) {
 console.log("showModalIframe "+modalId);
     $("#"+modalId).dialog({
