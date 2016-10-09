@@ -181,7 +181,7 @@ function modalDialogWidth() {
 
 // If the enclosing modal is content from the background document
 function showModal(title, modalId) {
-console.log("showModalIframe "+modalId);
+    console.log("showModal "+modalId);
     $("#"+modalId).dialog({
         title: title,
         width: modalDialogWidth(),
@@ -189,6 +189,9 @@ console.log("showModalIframe "+modalId);
         modal: true,
         draggable: false
     });
+
+    // In order to float above the BootStrap navigation
+    $('.ui-dialog').css('z-index',9999);
 
     $(window).resize(function() {
         $("#"+modalId).dialog("option", "width", modalDialogWidth());
@@ -198,6 +201,7 @@ console.log("showModalIframe "+modalId);
 // If the enclosing modal contains an iframe
 function showModalIframe(title, modalId, iframeId, spinnerUrl) {
 console.log("showModalIframe "+modalId);
+    $("#"+modalId).css('zIndex',9999);
     $("#"+modalId).dialog({
         title: title,
         width: modalDialogWidth(),
@@ -213,6 +217,9 @@ console.log("showModalIframe "+modalId);
             }
         }
     });
+
+    // In order to float above the BootStrap navigation
+    $('.ui-dialog').css('z-index',9999);
 
     $(window).resize(function() {
         $("#"+modalId).dialog("option", "width", modalDialogWidth());
