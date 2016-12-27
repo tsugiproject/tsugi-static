@@ -227,9 +227,8 @@ console.log("showModalIframe "+modalId);
     });
 }
 
-
-    /* Light YouTube Embeds by @labnol */
-    /* Web: http://labnol.org/?p=27941 */
+/* Light YouTube Embeds by @labnol */
+/* Web: http://labnol.org/?p=27941 */
  
 $(document).ready(
 // document.addEventListener("DOMContentLoaded",
@@ -243,7 +242,8 @@ $(document).ready(
             div.onclick = labnolIframe;
             v[n].appendChild(div);
         }
-    });
+    }
+);
  
 function labnolThumb(id) {
     var thumb = '<img src="https://i.ytimg.com/vi/ID/hqdefault.jpg">',
@@ -274,3 +274,22 @@ function labnolIframe() {
     this.parentNode.replaceChild(iframe, this);
 }
  
+var TSUGI_TEMPLATES = {};
+
+function tsugiHandlebarsRender(name, context) {
+
+    if ( ! (name in TSUGI_TEMPLATES ) ) {
+        window.console && console.log("Compiling "+name);
+        var source  = $("#template-"+name).html();
+        var compile = Handlebars.compile(source);
+        TSUGI_TEMPLATES[name] = compile;
+    }
+    window.console && console.log("Rendering "+name);
+    var template = TSUGI_TEMPLATES[name];
+    return template(context);
+}
+
+function tsugiHandlebarsToDiv(div, name, context) {
+    $('#'+div).empty().append(tsugiHandlebarsRender(name, context));
+}
+
