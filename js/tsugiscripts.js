@@ -199,8 +199,8 @@ function showModal(title, modalId) {
 }
 
 // If the enclosing modal contains an iframe
-function showModalIframe(title, modalId, iframeId, spinnerUrl) {
-console.log("showModalIframe "+modalId);
+function showModalIframe(title, modalId, iframeId, spinnerUrl, refreshParentOnClose) {
+    console.log("showModalIframe "+modalId);
     $("#"+modalId).css('zIndex',9999);
     $("#"+modalId).dialog({
         title: title,
@@ -214,6 +214,9 @@ console.log("showModalIframe "+modalId);
         close: function() {
             if ( spinnerUrl ) {
                 $('#'+iframeId).attr('src',spinnerUrl);
+            }
+            if ( refreshParentOnClose ) {
+                location.reload();
             }
         }
     });
