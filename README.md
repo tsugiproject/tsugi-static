@@ -4,7 +4,7 @@ Tsugi Static Files (Cross-Language)
 
 This is part of the Tsugi Project:
 
-* [PHP Tsugi](https://github.com/csev/tsugi)
+* [PHP Tsugi](https://github.com/tsugiproject/tsugi)
 
 This holds the static files used by the Tsugi framework.  This is shared between the
 Tsugi implementations in various languages.
