@@ -306,3 +306,13 @@ function tsugiSetCookie(cname, cvalue, exdays) {
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
+// Setup the menu
+function tsugiEmbedMenu() {
+    $('#tsugi-embed-menu').delay(1000).fadeIn(1000);
+    $TSUGI_EMBED_TIMEOUT = setTimeout(function(){ 
+        $('#tsugi-embed-menu').fadeOut(1000);
+    }
+    , 15000);
+}
+
+
