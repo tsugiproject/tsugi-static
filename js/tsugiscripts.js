@@ -306,13 +306,20 @@ function tsugiSetCookie(cname, cvalue, exdays) {
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
+$TSUGI_EMBED_TIMEOUT = false;
 // Setup the menu
 function tsugiEmbedMenu() {
     $('#tsugi-embed-menu').delay(1000).fadeIn(1000);
     $TSUGI_EMBED_TIMEOUT = setTimeout(function(){ 
         $('#tsugi-embed-menu').fadeOut(1000);
+        $TSUGI_EMBED_TIMEOUT = false;
     }
     , 15000);
+}
+
+function tsugiEmbedKeep() {
+    if ( $TSUGI_EMBED_TIMEOUT ) clearTimeout($TSUGI_EMBED_TIMEOUT);
+    $TSUGI_EMBED_TIMEOUT = false;
 }
 
 
