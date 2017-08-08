@@ -1,6 +1,7 @@
 .DS_Store
 
 *.class
+*.swp
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
