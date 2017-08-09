@@ -322,6 +322,9 @@ function maxZIndex(elems)
 
 // Show an overlay div
 function showOverlay(elem, spinner) {
+        elem = elem || "#tsugi_overlay";
+        spinner = spinner || "#tsugi_overlay_spinner";
+        elem="#tsugi_overlay", spinner="#tsugi_overlay_spinner"
         // In order to float above the BootStrap navigation
         var maxz = maxZIndex();
         $(elem).css('z-index',maxz+1);
@@ -336,12 +339,14 @@ function showOverlay(elem, spinner) {
 
 // Hide an overlay div
 function hideOverlay(elem, spinner) {
-        // In order to float above the BootStrap navigation
+        elem = elem || "#tsugi_overlay";
+        spinner = spinner || "#tsugi_overlay_spinner";
+
         var maxz = maxZIndex();
         $(elem).css('z-index',-1);
         $(spinner).css('z-index',-1);
-        $(elem).show();
-        $(spinner).show();
+        $(elem).hide();
+        $(spinner).hide();
 }
 
 $TSUGI_EMBED_TIMEOUT = false;
