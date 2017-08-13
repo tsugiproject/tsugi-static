@@ -1,6 +1,7 @@
 <!-- Defines element markup -->
 <template>
     <p>Hello <strong></strong> :)</p>
+    <p><button type="button" class="btn btn-primary">Primary Button</button></p>
 </template>
 
 <script>
@@ -71,7 +72,7 @@ require_once "tsugi/config.php";
         this.strong.textContent = this.who;
     };
 
-    // Registers <hello-world> in the main document
+    // Registers <hello-world2> in the main document
     window.MyElement = thatDoc.registerElement('hello-world2', {
         prototype: MyElementProto
     });

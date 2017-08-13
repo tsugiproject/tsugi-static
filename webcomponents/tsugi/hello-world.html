@@ -15,7 +15,7 @@ require_once "tsugi/config.php";
 
 class HelloWorld extends HTMLElement {
     connectedCallback () {
-        this.innerHTML = 'hello, world!'
+        this.innerHTML = 'hello, world!<br/><button type="button" class="btn btn-primary">Primary Button</button>'
     }
 }
 customElements.define( 'hello-world', HelloWorld )
