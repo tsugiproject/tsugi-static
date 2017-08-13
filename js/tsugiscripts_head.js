@@ -47,3 +47,15 @@ if ('registerElement' in document
     document.body.appendChild(e);
 }
 
+// Make sure to polyfill fetch() if needed
+// https://github.com/github/fetch
+
+if (window.fetch) {
+    // console.log("Fetch is already there...");
+} else {
+    // polyfill fetch()
+    var e = document.createElement('script');
+    e.src = _TSUGI.staticroot+'/polyfill/fetch-2.0.3/fetch.js'
+    window.console && console.log("Polyfill fetch.. "+e.src);
+    document.body.appendChild(e);
+}
