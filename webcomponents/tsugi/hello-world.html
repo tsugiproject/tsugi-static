@@ -1,0 +1,22 @@
+<script>
+// https://stackoverflow.com/questions/40979549/vanilla-hello-world-app-using-web-components
+
+/* Usage: 
+<?php
+require_once "tsugi/config.php";
+?>
+<html>
+<head>
+    <link rel=import href="<?= $CFG->staticroot ?>/webcomponents/tsugi/hello-world.html">
+<body>
+    <h1>Bob</h1>
+    <hello-world></hello-world>
+*/
+
+class HelloWorld extends HTMLElement {
+    connectedCallback () {
+        this.innerHTML = 'hello, world!'
+    }
+}
+customElements.define( 'hello-world', HelloWorld )
+</script>
