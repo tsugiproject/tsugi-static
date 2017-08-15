@@ -10,12 +10,19 @@ require_once "tsugi/config.php";
     <link rel=import href="<?= $CFG->staticroot ?>/webcomponents/tsugi/hello-world.html">
 <body>
     <h1>Bob</h1>
-    <hello-world></hello-world>
+    <hello-world stuff="nonsense"></hello-world>
 */
 
 class HelloWorld extends HTMLElement {
     connectedCallback () {
-        this.innerHTML = 'hello, world!<br/><button type="button" class="btn btn-primary">Primary Button</button>'
+        var stuff = 'Not Set';
+        if (this.hasAttribute('stuff')) {
+            stuff = this.getAttribute('stuff');
+        }
+
+        this.innerHTML = 'hello, world!<br/>'
+            +stuff+
+            '<br/><button type="button" class="btn btn-primary">Primary Button</button>';
     }
 }
 customElements.define( 'hello-world', HelloWorld )

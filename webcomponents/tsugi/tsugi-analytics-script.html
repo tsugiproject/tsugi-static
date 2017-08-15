@@ -1,0 +1,71 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script>
+// https://stackoverflow.com/questions/40979549/vanilla-hello-world-app-using-web-components
+
+/* Usage: 
+<?php
+require_once "tsugi/config.php";
+$OUTPUT->header();
+echo('<link rel=import href="'.$CFG->staticroot.'/webcomponents/tsugi/tsugi-analytics-chart.html">'."\n");
+$OUTPUT->bodyStart();
+?>
+    <h1>Tsugi-Analytics-Chart</h1>
+    <tsugi-analytics-chart chartid="chart_div"></tsugi-analytics-chart>
+<?  $OUTPUT->footerStart(); ?>
+    <tsugi-analytics-script chartid="chart_div" chartdata="blah.json"></tsugi-analytics-script>
+<?  $OUTPUT->footerEnd(); ?>
+*/
+
+class TsugiAnalyticsScript extends HTMLElement {
+    connectedCallback () {
+        if (this.hasAttribute('chartid')) {
+            var chartid = this.getAttribute('chartid');
+        } else {
+            this.innerHTML = "Missing chartid attribute";
+            return;
+        }
+
+        if (this.hasAttribute('chartdata')) {
+            var chartdata = this.getAttribute('chartdata');
+        } else {
+            this.innerHTML = "Missing chartdata attribute";
+            return;
+        }
+
+        $.getJSON(chartdata, function (x) {
+            var rows = Array();
+            var j = 0;
+            for(var i=0; i<x.rows.length;i++) {
+                rows[j++] = [new Date(x.rows[i][0]*1000), 0];
+                rows[j++] = [new Date(x.rows[i][0]*1000), x.rows[i][1]];
+                rows[j++] = [new Date((x.rows[i][0]+x.width)*1000), x.rows[i][1]];
+                rows[j++] = [new Date((x.rows[i][0]+x.width)*1000), 0];
+            }
+
+            google.charts.load('current', {'packages':['annotatedtimeline']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                var data = new google.visualization.DataTable();
+                data.addColumn('datetime', 'Date');
+                data.addColumn('number', 'Launches');
+                data.addRows(rows);
+
+                var chart = new google.visualization.AnnotationChart(document.getElementById(chartid));
+
+                var options = {
+                    displayAnnotations: true,
+                    fill: 50,
+                    max: (x.max*1.10),
+                    thickness: 2
+                };
+
+                chart.draw(data, options);
+            }
+        });
+
+    }
+}
+customElements.define( 'tsugi-analytics-script', TsugiAnalyticsScript )
+</script>

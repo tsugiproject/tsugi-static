@@ -1,0 +1,31 @@
+<script>
+// https://stackoverflow.com/questions/40979549/vanilla-hello-world-app-using-web-components
+
+/* Usage: 
+<?php
+require_once "tsugi/config.php";
+$OUTPUT->header();
+echo('<link rel=import href="'.$CFG->staticroot.'/webcomponents/tsugi/tsugi-analytics-chart.html">'."\n");
+$OUTPUT->bodyStart();
+?>
+    <h1>Tsugi-Analytics-Chart</h1>
+    <tsugi-analytics-chart chartid="chart_div"></tsugi-analytics-chart>
+<?  $OUTPUT->footerStart(); ?>
+    <tsugi-analytics-script chartid="chart_div" data="blah.json"></tsugi-analytics-script>
+<?  $OUTPUT->footerEnd(); ?>
+*/
+
+class TsugiAnalyticsChart extends HTMLElement {
+    connectedCallback () {
+        if (this.hasAttribute('chartid')) {
+            var chartid = this.getAttribute('chartid');
+        } else {
+            this.innerHTML = "Missing chartid attribute";
+            return;
+        }
+
+        this.innerHTML = '<div id="'+chartid+'" style="width: 100%; height: 400px;"></div>';
+    }
+}
+customElements.define( 'tsugi-analytics-chart', TsugiAnalyticsChart )
+</script>
