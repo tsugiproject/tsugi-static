@@ -34,6 +34,10 @@ class TsugiAnalyticsScript extends HTMLElement {
         }
 
         $.getJSON(chartdata, function (x) {
+            if ( x.rows.length < 1 ) {
+                $('#'+chartid).text("No analytics data available.");
+                return;
+            }
             var rows = Array();
             var j = 0;
             for(var i=0; i<x.rows.length;i++) {
