@@ -1,0 +1,49 @@
+html{
+    font-size: 10pt;
+}
+
+body{
+    font-family: 'Martel';
+    line-height: 2.6rem;
+    font-size: 1.45rem;
+    color:rgba(0,0,0,0.75);
+    line-height: 2.7rem;
+}
+p{
+    margin: 0;
+    padding: 0;
+
+}
+a{
+    color: inherit;
+}
+
+a:hover{
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#top-logo{
+    height: 2.5rem;
+    display: inline-block;
+    margin-top: -0.4rem;
+    margin-left: 1.5rem;
+}
+
+.navbar-default{
+    background-color: white;
+    font-family: 'Open Sans';
+}
+
+.navbar-default .navbar-nav>li>a{
+    color: #2196F3;
+}
+
+.navbar-right :first-child {
+    
+}
+
+.body-container{
+    width: 80rem;
+    margin: 5rem auto;
+}
