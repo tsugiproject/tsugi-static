@@ -18,7 +18,7 @@ function doHeartBeat() {
         } else {
             clearInterval(HEARTBEAT_INTERVAL);
             HEARTBEAT_INTERVAL = false;
-            alert('Your session has expired');
+            alert(_TSUGI.session_expire_message);
             window.location.href = "about:blank";
         }
     });
@@ -60,7 +60,7 @@ function lti_frameResize(new_height, element_id) {
     }
 
     DE_BOUNCE_LTI_FRAME_RESIZE_TIMER = setTimeout(
-        function () { lti_frameResizeNow(new_height, element_id); }, 
+        function () { lti_frameResizeNow(new_height, element_id); },
         1000
     );
 }
@@ -101,7 +101,7 @@ function lti_scrollParentToTop() {
       subject: "lti.scrollToTop"
     }), "*");
 }
-  
+
 // Straight Outta Github (with adaptations)
 // https://github.com/lumenlearning/candela/blob/master/wp-content/plugins/candela-utility/themes/bombadil/js/iframe_resizer.js
 /**
@@ -158,7 +158,7 @@ if ( ! (self == top) ) {
         $(window).on('resize', function() { lti_frameResize(false, LTI_PARENT_IFRAME_ID); });
     }
 }
-    
+
 // From Sakai
 // Return the breakpoint between small and medium sized displays - for morpheus currently the same
 function portalSmallBreakPoint() { return 800; }
@@ -232,7 +232,7 @@ function showModalIframe(title, modalId, iframeId, spinnerUrl, refreshParentOnCl
 
 /* Light YouTube Embeds by @labnol */
 /* Web: http://labnol.org/?p=27941 */
- 
+
 $(document).ready(
 // document.addEventListener("DOMContentLoaded",
     function() {
@@ -247,13 +247,13 @@ $(document).ready(
         }
     }
 );
- 
+
 function labnolThumb(id) {
     var thumb = '<img src="https://i.ytimg.com/vi/ID/hqdefault.jpg">',
         play = '<div class="play"></div>';
     return thumb.replace("ID", id) + play;
 }
- 
+
 function labnolIframe() {
     // Reset any currently active players...
     var v = document.getElementsByClassName("generated-youtube-frame");
@@ -276,7 +276,7 @@ function labnolIframe() {
     iframe.setAttribute("mozallowfullscreen", "1");
     this.parentNode.replaceChild(iframe, this);
 }
- 
+
 var TSUGI_TEMPLATES = {};
 
 function tsugiHandlebarsRender(name, context) {
@@ -353,7 +353,7 @@ $TSUGI_EMBED_TIMEOUT = false;
 // Setup the menu
 function tsugiEmbedMenu() {
     $('#tsugi-embed-menu').delay(1000).fadeIn(1000);
-    $TSUGI_EMBED_TIMEOUT = setTimeout(function(){ 
+    $TSUGI_EMBED_TIMEOUT = setTimeout(function(){
         $('#tsugi-embed-menu').fadeOut(1000);
         $TSUGI_EMBED_TIMEOUT = false;
     }
@@ -394,3 +394,11 @@ if (window.fetch) {
     console.log("Polyfill fetch.. "+polyfill);
 }
 
+// https://stackoverflow.com/questions/19761241/window-close-and-self-close-do-not-close-the-window-in-chrome
+// How to close a window even if we did not open it
+function window_close()
+{
+    window.close();
+    setTimeout(function(){ console.log("Attempting self.close"); self.close(); }, 1000);
+    setTimeout(function(){ console.log("Notifying the user."); alert(_TSUGI.window_close_message); open("about:blank", '_self').close(); }, 2000);
+}
