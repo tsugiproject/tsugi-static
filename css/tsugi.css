@@ -83,4 +83,8 @@
     text-align: center;
 }
  
+/* https://stackoverflow.com/questions/23001424/how-do-i-get-rid-of-this-blue-halo-around-the-close-dialog-button-with-jqueryui */
+
+.ui-button:focus { outline:none !important }
+
 </style>
