@@ -282,9 +282,22 @@ var TSUGI_TEMPLATES = {};
 function tsugiHandlebarsRender(name, context) {
 
     if ( ! (name in TSUGI_TEMPLATES ) ) {
-        window.console && console.log("Compiling "+name);
-        var source  = $("#template-"+name).html();
-        var compile = Handlebars.compile(source);
+        var source = false;
+        var compile = false;
+        // Check if this came in as a web component
+        var link = document.querySelector('#handlebars-templates');
+        if ( link ) {
+            var content = link.import;
+            var el = content.querySelector('#'+name);
+            compile = Handlebars.compile(el.content.firstElementChild.innerHTML);
+            console.log('Got a template from web components!');
+            window.console && console.log('Compiling '+name+' from web components');
+        // The pre-web component way
+        } else {
+            source  = $("#template-"+name).html();
+            compile = Handlebars.compile(source);
+            window.console && console.log('Compiling '+name+' from tag');
+        }
         TSUGI_TEMPLATES[name] = compile;
     }
     window.console && console.log("Rendering "+name);
