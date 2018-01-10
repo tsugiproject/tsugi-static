@@ -290,7 +290,6 @@ function tsugiHandlebarsRender(name, context) {
             var content = link.import;
             var el = content.querySelector('#'+name);
             compile = Handlebars.compile(el.content.firstElementChild.innerHTML);
-            console.log('Got a template from web components!');
             window.console && console.log('Compiling '+name+' from web components');
         // The pre-web component way
         } else {
