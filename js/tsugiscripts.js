@@ -414,3 +414,16 @@ function window_close()
     setTimeout(function(){ console.log("Attempting self.close"); self.close(); }, 1000);
     setTimeout(function(){ console.log("Notifying the user."); alert(_TSUGI.window_close_message); open("about:blank", '_self').close(); }, 2000);
 }
+
+function addSession(url) {
+    if ( ! _TSUGI.ajax_session ) return url;
+    var retval = url;
+    if ( retval.indexOf('?') > 0 ) {
+        retval += '&';
+    } else {
+        retval += '?';
+    }
+    retval += _TSUGI.ajax_session;
+    return retval;
+}
+
