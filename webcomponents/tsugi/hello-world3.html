@@ -1,0 +1,35 @@
+<!-- Defines element markup 
+the poly fill may push the ids into the root document 
+so make sure the ids are quite unique.
+-->
+<template id="hello-world3-template">
+<div>
+<p>Yada</p>
+<script>
+    console.log('From Main');
+</script>
+</div>
+</template>
+
+<script>
+
+(function(window, document, undefined) {
+    // Refers to the "importer", which is index.html
+    var thatDoc = document;
+
+    // Refers to the "importee", which is src/hello-world2.html
+    var thisDoc =  (thatDoc._currentScript || thatDoc.currentScript).ownerDocument;
+
+    var recurse = window.HandleBarsTemplateFromImport;
+    window.HandleBarsTemplateFromImport = function (temp) {
+        var template = thisDoc.querySelector(temp);
+        if ( template ) return template.content.firstElementChild.innerHTML;
+        if ( recurse ) {
+            console.log('Calling HandleBarsTemplateFromImport recursively...');
+            return recurse(temp);
+        }
+        return;
+    };
+})(window, document);
+</script>
+

@@ -284,15 +284,29 @@ function tsugiHandlebarsRender(name, context) {
     if ( ! (name in TSUGI_TEMPLATES ) ) {
         var source = false;
         var compile = false;
+
+        // Check if the import flattened the imported content 
+        // Here's looking at you FireFox and Safari
+        var template = document.querySelector('#'+name);
+        if ( template ) {
+            source = template.content.firstElementChild.innerHTML;
+            if ( source ) {
+                compile = Handlebars.compile(source);
+                window.console && console.log('Compiling '+name+' from base document');
+            }
+        }
+
         // Check if this came in as a web component
-        var link = document.querySelector('#handlebars-templates');
-        if ( link ) {
-            var content = link.import;
-            var el = content.querySelector('#'+name);
-            compile = Handlebars.compile(el.content.firstElementChild.innerHTML);
-            window.console && console.log('Compiling '+name+' from web components');
+        if ( ! compile && window.HandleBarsTemplateFromImport ) {
+            source = window.HandleBarsTemplateFromImport('#'+name);
+            if ( source ) {
+                compile = Handlebars.compile(source);
+                window.console && console.log('Compiling '+name+' from HandleBarsTemplateFromImport');
+            }
+        }
+
         // The pre-web component way
-        } else {
+        if ( !compile ) {
             source  = $("#template-"+name).html();
             compile = Handlebars.compile(source);
             window.console && console.log('Compiling '+name+' from tag');
@@ -384,8 +398,13 @@ if ( 'registerElement' in document
       && 'content' in document.createElement('template')) {
     // platform is good!
     // console.log("Web Components there ... "+_TSUGI.staticroot);
+    // Do this later than $(document).ready()
+    $(window).on("load", function(){
+        var event = new Event('WebComponentsReady');
+        window.dispatchEvent(event);
+    });
 } else {
-    var polyfill = _TSUGI.staticroot+'/polyfill/webcomponentsjs-1.0.5/webcomponents-lite.js'
+    var polyfill = _TSUGI.staticroot+'/polyfill/webcomponentsjs-1.0.22/webcomponents-lite.js'
     var e = document.createElement('script');
     e.src = polyfill;
     document.body.appendChild(e);
