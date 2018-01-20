@@ -289,7 +289,12 @@ function tsugiHandlebarsRender(name, context) {
         // Here's looking at you FireFox and Safari
         var template = document.querySelector('#'+name);
         if ( template ) {
-            source = template.content.firstElementChild.innerHTML;
+            // Actual template
+            if ( template.content && template.content.firstElementChild ) {
+                source = template.content.firstElementChild.innerHTML;
+            } else { // Old school script tag
+                source = template.innerHTML;
+            }
             if ( source ) {
                 compile = Handlebars.compile(source);
                 window.console && console.log('Compiling '+name+' from base document');
