@@ -280,24 +280,17 @@ function labnolIframe() {
 var TSUGI_TEMPLATES = {};
 
 function tsugiHandlebarsRender(name, context) {
-
     if ( ! (name in TSUGI_TEMPLATES ) ) {
         var source = false;
         var compile = false;
 
-        // Check if the import flattened the imported content 
-        // Here's looking at you FireFox and Safari
-        var template = document.querySelector('#'+name);
-        if ( template ) {
-            // Actual template
-            if ( template.content && template.content.firstElementChild ) {
-                source = template.content.firstElementChild.innerHTML;
-            } else { // Old school script tag
-                source = template.innerHTML;
-            }
+        // The pre-web component way
+        if ( !compile ) {
+            source  = $("#template-"+name).html();
             if ( source ) {
+                console.log(source);
                 compile = Handlebars.compile(source);
-                window.console && console.log('Compiling '+name+' from base document');
+                window.console && console.log('Compiling '+name+' from tag');
             }
         }
 
@@ -305,17 +298,34 @@ function tsugiHandlebarsRender(name, context) {
         if ( ! compile && window.HandleBarsTemplateFromImport ) {
             source = window.HandleBarsTemplateFromImport('#'+name);
             if ( source ) {
+                console.log(source);
                 compile = Handlebars.compile(source);
                 window.console && console.log('Compiling '+name+' from HandleBarsTemplateFromImport');
             }
         }
 
-        // The pre-web component way
-        if ( !compile ) {
-            source  = $("#template-"+name).html();
-            compile = Handlebars.compile(source);
-            window.console && console.log('Compiling '+name+' from tag');
+        // Check if the import flattened the imported content 
+        // Here's looking at you FireFox and Safari
+        var template = document.querySelector('#'+name);
+        if ( ! compile && template ) {
+            // Actual template
+            if ( template.content && template.content.firstElementChild ) {
+                source = template.content.firstElementChild.innerHTML;
+            } else { // Old school script tag
+                source = template.innerHTML;
+            }
+            if ( source ) {
+                console.log(source);
+                compile = Handlebars.compile(source);
+                window.console && console.log('Compiling '+name+' from base document');
+            }
         }
+
+        if ( ! compile ) {
+            window.console && console.log('Could not find template:'+name+' in HandleBarsTemplateFromImport');
+            return false;
+        }
+
         TSUGI_TEMPLATES[name] = compile;
     }
     window.console && console.log("Rendering "+name);
