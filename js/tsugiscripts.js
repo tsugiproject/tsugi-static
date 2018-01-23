@@ -286,17 +286,27 @@ function tsugiHandlebarsRender(name, context) {
 
         // The pre-web component way
         if ( !compile ) {
+            source  = $("#script-template-"+name).html();
+            if ( source ) {
+                console.log(source);
+                compile = Handlebars.compile(source);
+                window.console && console.log('Compiling '+name+' from script-template');
+            }
+        }
+
+        // The pre-webcomponent way (old)
+        if ( !compile ) {
             source  = $("#template-"+name).html();
             if ( source ) {
                 console.log(source);
                 compile = Handlebars.compile(source);
-                window.console && console.log('Compiling '+name+' from tag');
+                window.console && console.log('Compiling '+name+' from script tag');
             }
         }
 
         // Check if this came in as a web component
         if ( ! compile && window.HandleBarsTemplateFromImport ) {
-            source = window.HandleBarsTemplateFromImport('#'+name);
+            source = window.HandleBarsTemplateFromImport('#webcomponents-template-'+name);
             if ( source ) {
                 console.log(source);
                 compile = Handlebars.compile(source);
@@ -306,7 +316,7 @@ function tsugiHandlebarsRender(name, context) {
 
         // Check if the import flattened the imported content 
         // Here's looking at you FireFox and Safari
-        var template = document.querySelector('#'+name);
+        var template = document.querySelector('#webcomponents-template-'+name);
         if ( ! compile && template ) {
             // Actual template
             if ( template.content && template.content.firstElementChild ) {
