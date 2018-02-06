@@ -1,0 +1,41 @@
+<p id="zap">Old Stuff</p>
+
+<script src="../dist/xss.js"></script>
+<script>
+var bad = ' \
+<p><span style="color:#2ecc71"><strong>Hello <span style="font-family:Courier New,Courier,monospace">world</span>! </strong></span></p> \
+ \
+<div style="background:#eeeeee;border:1px solid #cccccc;padding:5px 10px;"><code>&nbsp; &nbsp; lkds<br /> \
+&nbsp; &nbsp; ;ldskk;dls</code></div> \
+ \
+<p><strong>&lt;script&gt;Yada&lt;/script&gt;</strong></p>';
+
+// Custom rules
+var whiteList = filterXSS.getDefaultWhiteList();
+console.log(whiteList);
+whiteList.div = ['style'];
+whiteList.span = ['style'];
+var options = {
+  whiteList: whiteList,
+  stripIgnoreTagBody: ["script"] // the script tag is a special case, we need
+}; 
+// var html = filterXSS(bad);
+var xss = new filterXSS.FilterXSS(options);
+console.log(xss);
+xss = new filterXSS.FilterXSS(options);
+
+console.log(bad);
+var html = xss.process(bad);
+console.log(html);
+document.getElementById('zap').innerHTML = html;
+
+var timeStart = Date.now();
+var COUNT = 1000;
+for (var i = 0; i < COUNT; i++) {
+  html = xss.process(bad);
+  document.getElementById('zap').innerHTML = html;
+}
+var timeEnd = Date.now();
+var spent = timeEnd - timeStart;
+console.log(COUNT+' xss(): spent ' + spent + 'ms');
+</script>
