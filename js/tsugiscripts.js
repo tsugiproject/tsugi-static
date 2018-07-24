@@ -471,3 +471,12 @@ function addSession(url) {
     return retval;
 }
 
+// https://stackoverflow.com/questions/18749591/encode-html-entities-in-javascript
+if (typeof htmlentities != 'function')
+{
+function htmlentities(raw) {
+    var span = document.createElement("span");
+    span.textContent = raw;
+    return span.innerHTML;
+}
+}
