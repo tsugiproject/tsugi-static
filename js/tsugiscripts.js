@@ -485,9 +485,9 @@ function htmlentities(raw) {
 function tsugiNotifySocket(room) {
     if ( window.WebSocket && _TSUGI.websocket_url && _TSUGI.websocket_token ) {
         var url = _TSUGI.websocket_url+'/notify?token=';
-        url = url + encodeURI(_TSUGI.websocket_token);
+        url = url + encodeURIComponent(_TSUGI.websocket_token);
         if ( room ) {
-            url = url + "&room=" + encodeURI(room);
+            url = url + "&room=" + encodeURIComponent(room);
         }
         console.log('Opening web socket',url);
         var socket = new WebSocket(url);
