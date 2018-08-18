@@ -10,20 +10,40 @@ $.ajaxSetup({
 });
 
 function doHeartBeat() {
-    window.console && console.log('Calling heartbeat to extend session');
-    $.getJSON(HEARTBEAT_URL, function(data) {
-        window.console && console.log(data);
-        if ( data.lti || data.cookie ) {
-            // No problem
-        } else {
+    // Legacy
+    if ( window.HEARTBEAT_URL ) {
+        window.console && console.log('Calling legacy heartbeat to extend session');
+        $.getJSON(HEARTBEAT_URL, function(data) {
+            window.console && console.log(data);
+            if ( data.lti || data.cookie ) {
+                // No problem
+            } else {
+                clearInterval(HEARTBEAT_INTERVAL);
+                HEARTBEAT_INTERVAL = false;
+                alert(_TSUGI.session_expire_message);
+                window.location.href = "about:blank";
+            }
+        }).fail(function() {
+            console.log( "clearing interval" );
             clearInterval(HEARTBEAT_INTERVAL);
             HEARTBEAT_INTERVAL = false;
-            alert(_TSUGI.session_expire_message);
-            window.location.href = "about:blank";
-        }
-    });
+        });
+    // New way - Only start timer upon success, add a minimum
+    } else {
+        window.console && console.log('Calling heartbeat to extend session');
+        $.getJSON(_TSUGI.heartbeat_url, function(data) {
+            window.console && console.log(data);
+            if ( data.lti || data.cookie ) {
+                var howlong = _TSUGI.heartbeat;
+                if ( howlong < 5*60*1000 ) {
+                    console.log('Timer was too short',howlong);
+                    howlong = 5*60*1000;
+                }
+                HEARTBEAT_TIMEOUT = setTimeout(doHeartBeat, howlong);
+            }
+        });
+    }
 }
-
 
 var DE_BOUNCE_LTI_FRAME_RESIZE_TIMER = false;
 var DE_BOUNCE_LTI_FRAME_RESIZE_HEIGHT = false;
