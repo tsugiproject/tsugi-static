@@ -14,7 +14,7 @@ Tsugi implementations in various languages.
 You can check this out locally into the htdocs folder next to your Tsugi
 developer console (/tsugi) or just use the copy stored in the CloudFlare CDN at:
 
-    https://www.dr-chuck.net/tsugi-static
+    https://static.tsugi.org
     
 If you don't specify the `staticroot` in `config.php` it will use the above
 URL to serve static content.  If you want to serve it locally if you are on 
