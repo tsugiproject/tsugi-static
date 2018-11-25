@@ -25,7 +25,7 @@ to your Tsugi
 developer console <code>(/tsugi)</code> or just use the copy stored
 in the CloudFlare CDN at:
 <pre>
-    https://www.dr-chuck.net/tsugi-static
+    https://static.tsugi.org
 </pre>
 </p>
 <p>
@@ -38,6 +38,7 @@ to the following:
     $CFG-&gt;staticroot = $CFG-&gt;wwwroot . '/../tsugi-static';  // Relative
     $CFG-&gt;staticroot = 'http://localhost/tsugi-static';  // Absolute
     $CFG-&gt;staticroot = 'http://localhost:8888/tsugi-static';   // MAMP
+    $CFG-&gt;staticroot = 'https://static.tsugi.org';   // MAMP
 </pre>
 Or something similar.
 </p>
