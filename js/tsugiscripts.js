@@ -250,6 +250,15 @@ function showModalIframe(title, modalId, iframeId, spinnerUrl, refreshParentOnCl
     });
 }
 
+// Attempt to fix Chrome issue
+// https://stackoverflow.com/questions/7551912/jquery-force-set-src-attribute-for-iframe
+// If the enclosing modal contains an iframe, set the src after the modal is up
+function showModalIframeUrl(title, modalId, iframeId, url, spinnerUrl, refreshParentOnClose) {
+    showModalIframe(title, modalId, iframeId, spinnerUrl, refreshParentOnClose);
+    console.log("Navigated "+url);
+    $('#'+iframeId).attr('src',url);
+}
+
 /* Light YouTube Embeds by @labnol */
 /* Web: http://labnol.org/?p=27941 */
 
