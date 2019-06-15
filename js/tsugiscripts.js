@@ -250,12 +250,21 @@ function showModalIframe(title, modalId, iframeId, spinnerUrl, refreshParentOnCl
     });
 }
 
-// Attempt to fix Chrome issue
+// Attempt to fix Chrome issue (take 2)
 // https://stackoverflow.com/questions/7551912/jquery-force-set-src-attribute-for-iframe
-// If the enclosing modal contains an iframe, set the src after the modal is up
+// If the enclosing modal contains an iframe, set the src two seconds after the modal is up
 function showModalIframeUrl(title, modalId, iframeId, url, spinnerUrl, refreshParentOnClose) {
     showModalIframe(title, modalId, iframeId, spinnerUrl, refreshParentOnClose);
-    console.log("Navigated "+url);
+    if ( spinnerUrl ) {
+        $('#'+iframeId).attr('src',spinnerUrl);
+    } else {
+        $('#'+iframeId).attr('src','about:blank');
+    }
+    setTimeout(finishModalIframeUrl, 2000, iframeId, url);
+}
+
+function finishModalIframeUrl(iframeId, url) {
+    console.log("Navigated "+iframeId+" to "+url);
     $('#'+iframeId).attr('src',url);
 }
 
