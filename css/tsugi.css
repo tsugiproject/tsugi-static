@@ -82,9 +82,431 @@
     z-index:1000;
     text-align: center;
 }
+/* Bootstrap theme changes */
+html {
+    font-size: var(--font-size);
+}
+body {
+    font-family: var(--font-family);
+    font-size: 1rem;
+    line-height: 1.93rem;
+    color: var(--text);
+}
+a, .btn-link {
+    color: var(--primary);
+}
+a:active,
+a:hover,
+a:focus,
+.btn-link:active,
+.btn-link:hover,
+.btn-link:focus {
+    color: var(--primary);
+    opacity: 0.8;
+}
+a:active,
+a:focus,
+a:hover,
+.btn-link:active,
+.btn-link:focus,
+.btn-link:hover {
+    text-decoration: none;
+}
+.btn {
+    font-weight: 900;
+    font-size: 1.14rem;
+    line-height: 1.93rem;
+}
+.btn-primary {
+    color: var(--nav-text);
+    background-color: var(--primary);
+    border-color: var(--primary-border);
+}
+.btn-primary:focus,
+.btn-primary.focus {
+    color: var(--nav-text);
+    background-color: var(--primary-darker);
+    border-color: var(--primary-darkest);
+}
+.btn-primary:hover {
+    color: var(--nav-text);
+    background-color: var(--primary-darker);
+    border-color: var(--primary-darkest);
+}
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+    color: var(--nav-text);
+    background-color: var(--primary-darker);
+    background-image: none;
+    border-color: var(--primary-darkest);
+}
+.btn-primary:active:hover,
+.btn-primary.active:hover,
+.open > .dropdown-toggle.btn-primary:hover,
+.btn-primary:active:focus,
+.btn-primary.active:focus,
+.open > .dropdown-toggle.btn-primary:focus,
+.btn-primary:active.focus,
+.btn-primary.active.focus,
+.open > .dropdown-toggle.btn-primary.focus {
+    color: var(--nav-text);
+    background-color: var(--primary-darker);
+    border-color: var(--primary-darkest);
+}
+.btn-primary.disabled:hover,
+.btn-primary[disabled]:hover,
+fieldset[disabled] .btn-primary:hover,
+.btn-primary.disabled:focus,
+.btn-primary[disabled]:focus,
+fieldset[disabled] .btn-primary:focus,
+.btn-primary.disabled.focus,
+.btn-primary[disabled].focus,
+fieldset[disabled] .btn-primary.focus {
+    background-color: var(--primary-darker);
+    border-color: var(--primary-darkest);
+}
+.btn-primary .badge {
+    color: var(--primary-darkest);
+    background-color: var(--nav-text);;
+}
+h1, .h1 {
+    font-weight: 900;
+    font-size: 2.64rem;
+    line-height: 4.23rem;
+}
+h2, .h2 {
+    font-weight: 900;
+    font-size: 2.07rem;
+    line-height: 3.43rem;
+}
+h3, .h3 {
+    font-weight: 900;
+    font-size: 1.64rem;
+    line-height: 2.86rem;
+}
+h4, .h4 {
+    font-weight: 900;
+    font-size: 1.29rem;
+    line-height: 1.93rem;
+}
+h5, .h5 {
+    font-weight: 900;
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+h1.inline, .h1.inline,
+h2.inline, .h2.inline,
+h3.inline, .h3.inline,
+h4.inline, .h4.inline,
+h5.inline, .h5.inline {
+    font-weight: normal;
+    line-height: 1.5rem;
+    text-decoration: none;
+}
+h1 > small,
+h2 > small,
+h3 > small,
+h4 > small,
+h5 > small {
+    font-weight: 900;
+    color: var(--text-light);
+}
+h1 small,
+h2 small,
+h3 small,
+h4 small,
+h5 small,
+h6 small,
+.h1 small,
+.h2 small,
+.h3 small,
+.h4 small,
+.h5 small,
+.h6 small,
+h1 .small,
+h2 .small,
+h3 .small,
+h4 .small,
+h5 .small,
+h6 .small,
+.h1 .small,
+.h2 .small,
+.h3 .small,
+.h4 .small,
+.h5 .small,
+.h6 .small {
+    color: var(--text-light);
+}
+h1.small-hdr,
+h2.small-hdr,
+h3.small-hdr,
+h4.small-hdr,
+h5.small-hdr {
+    margin-top: 1rem;
+    margin-bottom: 0;
+}
+h2.sub-hdr,
+h3.sub-hdr,
+h4.sub-hdr,
+h5.sub-hdr {
+    margin-top: 0;
+}
+h1.hdr-notop-mrgn,
+h2.hdr-notop-mrgn,
+h3.hdr-notop-mrgn,
+h4.hdr-notop-mrgn,
+h5.hdr-notop-mrgn {
+    margin-top: 0;
+}
+label.h1,
+label.h2,
+label.h3,
+label.h4,
+label.h5 {
+    margin-top: 0;
+}
+.navbar-default {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+.navbar-default .navbar-brand {
+    color: var(--nav-text);
+}
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+    color: var(--nav-text);
+    background-color: transparent;
+}
+.navbar-default .navbar-text {
+    color: var(--nav-text);
+}
+.navbar-default .navbar-nav > li > a {
+    color: var(--nav-text);
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: var(--nav-text);
+    background-color: transparent;
+}
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+    color: var(--nav-text);
+    background: var(--primary);
+}
+.navbar-default .navbar-nav > .disabled > a,
+.navbar-default .navbar-nav > .disabled > a:hover,
+.navbar-default .navbar-nav > .disabled > a:focus {
+    color: var(--nav-text);
+    background: transparent;
+}
+.navbar-default .navbar-toggle {
+    border-color: var(--nav-text);
+}
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+    background: var(--primary);
+}
+.navbar-default .navbar-toggle .icon-bar {
+    background: var(--nav-text);
+}
+.navbar-default .navbar-collapse,
+.navbar-default .navbar-form {
+    border-color: var(--nav-text);
+    background: var(--primary);
+}
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+    background: var(--primary);
+    border-color: var(--nav-text);
+    color: var(--nav-text);
+}
+@media (max-width: 767px) {
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+        color: var(--nav-text);
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+        color: var(--nav-text);
+        background: transparent;
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+        color: var(--nav-text);
+        background: var(--primary);
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a,
+    .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:focus {
+        color: var(--nav-text);
+        background: transparent;
+    }
+}
+.navbar-default .navbar-link {
+    color: var(--nav-text);
+}
+.navbar-default .navbar-link:hover {
+    color: var(--nav-text);
+}
+.navbar {
+    margin-bottom: 0;
+}
+.navbar-fixed-top {
+    height: 4.42rem;
+}
+.navbar-header {
+    padding-top: 0.23rem;
+}
+.navbar-default {
+    border: none;
+    border-radius: 0;
+}
+.navbar-default .nav > li {
+    font-size: 1.23rem;
+    margin-top: 0.43rem;
+    margin-bottom: 0.43rem;
+    padding: 0 0.43rem;
+}
+.navbar-default .nav > li > a {
+    border-bottom: 2px solid transparent;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0.43rem;
+    margin-left: 1.07rem;
+    margin-right: 1.07rem;
+    margin-bottom: 0.43rem;
+}
+.navbar-default .navbar-brand,
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+    font-size: 1.64rem;
+    opacity: 1;
+}
+.nav > li > a:active,
+.nav > li > a:hover,
+.nav > li > a:focus {
+    background-color: var(--primary);
+    color: var(--nav-text);
+    opacity: 1;
+}
+.nav > li:hover > a,
+.nav > li:focus > a,
+.nav > li.active > a,
+.nav > li.active:hover > a,
+.nav > li.active:focus > a {
+    border-bottom-color: var(--nav-text);
+    opacity: 1;
+}
+@media (max-width: 767px) {
+    .nav > li:hover > a,
+    .nav > li:focus > a,
+    .nav > li.active > a,
+    .nav > li.active:hover > a,
+    .nav > li.active:focus > a {
+        border-bottom-color: transparent;
+    }
+}
+.navbar-nav > li > .dropdown-menu {
+    margin-top: 0.43rem;
+}
+.flx-cntnr {
+    display: flex;
+    position: relative;
+}
+.flx-row {
+    flex-direction: row;
+}
+.flx-nowrap {
+    flex-wrap: nowrap;
+}
+.flx-start {
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+}
+.flx-grow-all {
+    flex-grow: 1;
+}
+.flx-grow-1 {
+    flex-grow: 1;
+}
+.flx-grow-2 {
+    flex-grow: 2;
+}
+.alert-banner {
+    position: absolute;
+    top: 4.42rem;
+    width: 100%;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0.43rem;
+    border-bottom-right-radius: 0.43rem;
+    padding-top: 0.71rem;
+    padding-bottom: 0.57rem;
+    font-size: 1.23rem;
+    line-height: 1.93rem;
+}
+.alert-banner > .container > .close {
+    margin-right: 0.57rem;
+}
+#toolTitle {
+    margin-top: 1em;
+}
+.splash-container {
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.splash-content {
+    text-align: center;
+    color: var(--nav-text);
+}
+h1.splash-header {
+    color: var(--nav-text);
+}
+
+#flashmessages > .alert-banner {
+    position: absolute;
+    width: 100%;
+    margin-left: -1.07rem;
+    border-radius: 0 0 0.43rem 0.43rem;
+    padding-top: 0.71rem;
+    padding-bottom: 0.57rem;
+    font-size: 1.23rem;
+    line-height: 1.93rem;
+}
+@media (min-width: 768px) {
+    #flashmessages.container > .alert-banner {
+        width: 750px;
+    }
+}
+@media (min-width: 992px) {
+    #flashmessages.container > .alert-banner {
+        width: 970px;
+    }
+}
+@media (min-width: 1200px) {
+    #flashmessages.container > .alert-banner {
+        width: 1170px;
+    }
+}
+#flashmessages > .alert-banner > .container > .close {
+    margin-right: 0.57rem;
+}
+.splash-container {
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.splash-content {
+    text-align: center;
+}
  
 /* https://stackoverflow.com/questions/23001424/how-do-i-get-rid-of-this-blue-halo-around-the-close-dialog-button-with-jqueryui */
 
 .ui-button:focus { outline:none !important }
-
-</style>
