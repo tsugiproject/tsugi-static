@@ -636,10 +636,14 @@ function tsugiSha256(ascii) {
 }
 
 // https://dev.to/mornir/-how-to-easily-copy-text-to-clipboard-a1a
-function copyToClipboard(textToCopy) {
+function copyToClipboard(par, textToCopy) {
   // 1) Add the text to the DOM (usually achieved with a hidden input field)
   const input = document.createElement('input');
-  document.body.appendChild(input);
+
+  // 1.5) Move off to the left but inline with the current item to avoid scroll effects
+  input.style.position = 'absolute';
+  input.style.left = '-1000px';
+  par.appendChild(input);
   input.value = textToCopy;
 
   // 2) Select the text
