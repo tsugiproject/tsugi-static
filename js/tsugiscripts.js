@@ -635,17 +635,26 @@ function tsugiSha256(ascii) {
     return result;
 }
 
-function tsugiCopyText(id) {
-  /* Get the text field */
-  var copyText = document.getElementById(id);
+// https://dev.to/mornir/-how-to-easily-copy-text-to-clipboard-a1a
+function copyToClipboard(textToCopy) {
+  // 1) Add the text to the DOM (usually achieved with a hidden input field)
+  const input = document.createElement('input');
+  document.body.appendChild(input);
+  input.value = textToCopy;
 
-  /* Select the text field */
-  copyText.select();
-  copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+  // 2) Select the text
+  input.focus();
+  input.select();
 
-  /* Copy the text inside the text field */
-  document.execCommand("copy");
+  // 3) Copy text to clipboard
+  const isSuccessful = document.execCommand('copy');
 
-  /* Alert the copied text */
-  console.log("Copied the text: " + copyText.value);
+  // 4) Catch errors
+  if (!isSuccessful) {
+    console.error('Failed to copy text.');
+  }
+
+  // Remove the new input tag
+  input.remove();
 }
+
