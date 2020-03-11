@@ -290,6 +290,9 @@ label.h5 {
 .navbar-inverse .navbar-nav > li > a {
     color: var(--secondary);
 }
+.navbar-inverse .navbar-nav > li > p {
+    color: var(--secondary);
+}
 .navbar-inverse .navbar-nav > li > a:hover,
 .navbar-inverse .navbar-nav > li > a:focus {
     color: var(--secondary);
@@ -331,6 +334,9 @@ label.h5 {
 }
 @media (max-width: 767px) {
     .navbar-inverse .navbar-nav .open .dropdown-menu > li > a {
+        color: var(--secondary);
+    }
+    .navbar-inverse .navbar-nav .open .dropdown-menu > li > p {
         color: var(--secondary);
     }
     .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:hover,
@@ -493,6 +499,15 @@ label.h5 {
     padding: 0 0.43rem;
 }
 .navbar-default .nav > li > a {
+    border-bottom: 2px solid transparent;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0.43rem;
+    margin-left: 1.07rem;
+    margin-right: 1.07rem;
+    margin-bottom: 0.43rem;
+}
+.navbar-default .nav > li > p {
     border-bottom: 2px solid transparent;
     padding-left: 0;
     padding-right: 0;
