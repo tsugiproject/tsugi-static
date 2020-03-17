@@ -202,7 +202,7 @@ a:focus {
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 -1px 2px rgba(255, 255, 255, 0.3);
   outline: none;
 }
-.button.PostITator-remove {
+.button.StickyGrader-remove {
   position: absolute;
   top: 5px;
   right: 5px;
@@ -218,7 +218,7 @@ a:focus {
   font-weight: bolder;
   font-family: Helvetica, Arial, sans-serif;
 }
-.button.PostITator-remove:hover {
+.button.StickyGrader-remove:hover {
   background-color: #EF0005;
 }
 

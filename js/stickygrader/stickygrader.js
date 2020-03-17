@@ -61,10 +61,10 @@
     })(jQuery);
 
 
-var PostITator = {
+var StickyGrader = {
     options : {} ,
     noteTemp : '<div class="note">' +
-'<a href="javascript:;" class="button PostITator-remove">X</a>' +
+'<a href="javascript:;" class="button StickyGrader-remove">X</a>' +
 '<div class="note_cnt">' +
 '<textarea class="cnt" placeholder="Enter note"></textarea>' +
 '</div> ' +
@@ -72,14 +72,14 @@ var PostITator = {
 
     noteZindex : 1,
     deleteNote : function () {
-        if ( PostITator.options.onDelete ) {
-            PostITator.options.onDelete($(this).parent('.note').attr('id'));
+        if ( StickyGrader.options.onDelete ) {
+            StickyGrader.options.onDelete($(this).parent('.note').attr('id'));
         }
         // $(this).parent('.note').hide("puff", { percent: 133 }, 250);
         // $(this).parent('.note').hide("puff", { percent: 133 }, 250).remove();
         $(this).parent('.note').remove();
-        PostITator.lastTop = 0;
-        PostITator.lastLeft = 0;
+        StickyGrader.lastTop = 0;
+        StickyGrader.lastLeft = 0;
     },
 
     // https://stackoverflow.com/a/2117523/1994792
@@ -94,69 +94,69 @@ var PostITator = {
         var id = false;
         var top = $(document).scrollTop() + 20;
         var left = 20;
-        PostITator.addNote(id, top, left);
+        StickyGrader.addNote(id, top, left);
         return false;
     },
 
     lastTop: 0,
     lastLeft: 0,
     addNote: function (id=false, top=false, left=false, text=false) {
-        // console.log('begin', top, left, PostITator.lastTop.lastTop, PostITator.lastTop.lastleft);
+        // console.log('begin', top, left, StickyGrader.lastTop.lastTop, StickyGrader.lastTop.lastleft);
         var current = false;
         $('.current').each(function(i, obj) {
             if ( ! current ) current = obj;
         });
 
-        if ( current && PostITator.lastTop == top && PostITator.lastLeft == left ) {
+        if ( current && StickyGrader.lastTop == top && StickyGrader.lastLeft == left ) {
             top = current.offsetTop + 20;
             left = current.offsetLeft + 20;
         } else {
-            PostITator.lastTop = top;
-            PostITator.lastLeft = left;
+            StickyGrader.lastTop = top;
+            StickyGrader.lastLeft = left;
         }
         // console.log('end', top, left);
 
         $('.current').removeClass('current');
 
-        if ( ! id ) id = PostITator.uuidv4();
+        if ( ! id ) id = StickyGrader.uuidv4();
         if ( ! text ) text = '';
         // console.log('newNote', id, top, left, text);
-        $(PostITator.noteTemp).attr('id', id).css('top', top).css('left', left).css('position', 'absolute')
+        $(StickyGrader.noteTemp).attr('id', id).css('top', top).css('left', left).css('position', 'absolute')
         .addClass('current').hide().appendTo("#board").show("fade", 300)
-        .zIndex(++PostITator.noteZindex)
+        .zIndex(++StickyGrader.noteZindex)
         .draggable().on('dragstart',
             function () {
-                $(this).zIndex(++PostITator.noteZindex);
+                $(this).zIndex(++StickyGrader.noteZindex);
             }).on('dragstop', function() {
                 console.log('this', this);
                 var id = this.id;
                 var top = this.offsetTop;
                 var left = this.offsetLeft;
                 var text = $(this).find('textarea')[0].value;
-                if ( PostITator.options.onChange ) {
-                    PostITator.options.onChange(id, top, left, text);
+                if ( StickyGrader.options.onChange ) {
+                    StickyGrader.options.onChange(id, top, left, text);
                 }
             }).find('textarea')[0].value = text;
 
-        $('.PostITator-remove').click(PostITator.deleteNote);
+        $('.StickyGrader-remove').click(StickyGrader.deleteNote);
 
         $('#'+id).find('textarea').autogrow().on('change', function() {
             var elem = document.getElementById(id);
             var top = elem.offsetTop;
             var left = elem.offsetLeft;
             var text = this.value;
-            if ( PostITator.options.onChange ) {
-                PostITator.options.onChange(id, top, left, text);
+            if ( StickyGrader.options.onChange ) {
+                StickyGrader.options.onChange(id, top, left, text);
             }
         });
     },
 
     nextNote: function () {
-        PostITator.moveNote(true);
+        StickyGrader.moveNote(true);
     },
 
     prevNote: function () {
-        PostITator.moveNote(false);
+        StickyGrader.moveNote(false);
     },
 
     moveNote : function (forward) {
@@ -217,10 +217,10 @@ var PostITator = {
 
     onDelete : function(id) {
         console.log('onDelete', id);
-        if ( PostITator.options.service ) {
+        if ( StickyGrader.options.service ) {
             $.ajax({
                 type: 'DELETE',
-                url: PostITator.options.service + '/' + id,
+                url: StickyGrader.options.service + '/' + id,
             }).fail(function (msg) {
                 console.log('onDelete FAIL '+msg.status);
             });
@@ -229,12 +229,12 @@ var PostITator = {
 
     onChange : function(id, top, left, text) {
         console.log('onChange', id, top, left, text);
-        if ( PostITator.options.service ) {
+        if ( StickyGrader.options.service ) {
             let data = {"id":id, "top":top, "left":left, "text": text}
 
             $.ajax({
                 type: 'POST',
-                url: PostITator.options.service,
+                url: StickyGrader.options.service,
                 contentType: 'application/json',
                 data: JSON.stringify(data), // access in body
             }).fail(function (msg) {
@@ -246,10 +246,10 @@ var PostITator = {
     deleteAll : function() {
         console.log('deleteAll');
         $('.note').remove();
-        if ( PostITator.options.service ) {
+        if ( StickyGrader.options.service ) {
             $.ajax({
                 type: 'DELETE',
-                url: PostITator.options.service,
+                url: StickyGrader.options.service,
             }).fail(function (msg) {
                 console.log('deleteAll FAIL '+msg.status);
             });
@@ -259,15 +259,15 @@ var PostITator = {
 
     loadNotes : function() {
         console.log('loadNotes');
-        if ( PostITator.options.service ) {
+        if ( StickyGrader.options.service ) {
             $.ajax({
                 type: 'GET',
-                url: PostITator.options.service,
+                url: StickyGrader.options.service,
             }).done(function (data) {
                 console.log('loadNotes SUCCESS');
                 for(var i=0; i< data.length; i++) {
                     var note = data[i];
-                    PostITator.addNote(note.id, note.top, note.left, note.text);
+                    StickyGrader.addNote(note.id, note.top, note.left, note.text);
                 }
             }).fail(function (msg) {
                 console.log('loadNotes FAIL '+msg.status);
