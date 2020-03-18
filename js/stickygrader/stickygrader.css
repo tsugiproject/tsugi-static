@@ -147,7 +147,8 @@ a:focus {
   background-color: transparent;
   border: none;
   resize: vertical;
-  font-family: "Gloria Hallelujah", cursive;
+  /* font-family: "Gloria Hallelujah", cursive; */
+  font-family: Helvetica, Arial, sans-serif;
   width: 100%;
   padding: 5px;
 }
