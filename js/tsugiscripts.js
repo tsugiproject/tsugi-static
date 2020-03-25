@@ -662,3 +662,50 @@ function copyToClipboard(par, textToCopy) {
   input.remove();
 }
 
+// Make sure format is present
+// https://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
+// https://stackoverflow.com/a/4673436
+
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) {
+      return typeof args[number] != 'undefined'
+        ? args[number]
+        : match
+      ;
+    });
+  };
+}
+
+/*
+ * Enforce size limits on input type="file"
+ *
+ * If you call this after jQuery is loaded and mark your type="file" tags as follows
+ *
+ *    <input type="file" data-max-size="2097152" accept="application/pdf" name="pdfdoc">
+ *
+ * https://stackoverflow.com/questions/8212041/is-it-possible-to-validate-the-size-and-type-of-input-file-in-html5
+ * https://stackoverflow.com/a/11799218
+ */
+function tsugiCheckFileMaxSize () {
+    $(function(){
+        $('form').submit(function(){
+            var isOk = true;
+            $('input[type=file][data-max-size]').each(function(){
+                if(typeof this.files[0] !== 'undefined'){
+                    var maxSize = parseInt($(this).attr('data-max-size'),10);
+                    var maxText = $(this).attr('data-max-text');
+                    if (typeof maxText == 'undefined' ) maxText = "Error: {0} is > {1} bytes";
+                    size = this.files[0].size;
+                    if ( size > maxSize ) {
+                        alert(maxText.format(this.files[0].name, maxSize) );
+                    }
+                    isOk = maxSize > size;
+                    return isOk;
+                }
+            });
+            return isOk;
+        });
+    });
+}
