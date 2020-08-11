@@ -635,16 +635,23 @@ function tsugiSha256(ascii) {
     return result;
 }
 
+// Adapted from
 // https://dev.to/mornir/-how-to-easily-copy-text-to-clipboard-a1a
-function copyToClipboard(par, textToCopy) {
+// Added avoiding the scrolling effect by appending the new input
+// tag as a child of a nearby element (the parent element)
+// Usage:
+// <a href="#" onclick="copyToClipboardNoScroll(this, 'texttocopy');return false;">Copy</a>
+// <a href="#" onclick="copyToClipboardNoScroll(this, $('#pass').text());return false;">Copy</a>
+// <a href="#" onclick="copyToClipboardNoScroll(this, $('#myInput').val());return false;">Copy</a>
+function copyToClipboardNoScroll(parent_element, textToCopy) {
   // 1) Add the text to the DOM (usually achieved with a hidden input field)
   const input = document.createElement('input');
 
   // 1.5) Move off to the left but inline with the current item to avoid scroll effects
   input.style.position = 'absolute';
   input.style.left = '-1000px';
-  par.appendChild(input);
-  input.value = textToCopy;
+  parent_element.appendChild(input);
+  input.value = textToCopy.trim();
 
   // 2) Select the text
   input.focus();
@@ -660,6 +667,12 @@ function copyToClipboard(par, textToCopy) {
 
   // Remove the new input tag
   input.remove();
+}
+
+// TODO: Remove Legacy one of these days
+// https://dev.to/mornir/-how-to-easily-copy-text-to-clipboard-a1a
+function copyToClipboard(par, textToCopy) {
+  copyToClipBoardNoScroll(par, textToCopy);
 }
 
 // Make sure format is present
