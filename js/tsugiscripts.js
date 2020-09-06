@@ -292,8 +292,8 @@ function labnolThumb(id) {
     return thumb.replace("ID", id) + play;
 }
 
-function labnolIframe() {
-    // Reset any currently active players...
+// Reset any currently active players...
+function labnolStopPlayers() {
     var v = document.getElementsByClassName("generated-youtube-frame");
     for (n = 0; n < v.length; n++) {
         div = document.createElement("div");
@@ -302,6 +302,10 @@ function labnolIframe() {
         div.onclick = labnolIframe;
         v[n].parentNode.replaceChild(div, v[n]);
     }
+}
+
+function labnolIframe() {
+    labnolStopPlayers();
 
     var iframe = document.createElement("iframe");
     var embed = "https://www.youtube.com/embed/ID?autoplay=1";

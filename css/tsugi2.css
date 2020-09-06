@@ -10,7 +10,7 @@
         background: #000;
         margin: 5px;
     }
-    
+
     .youtube-player iframe {
         position: absolute;
         top: 0;
@@ -20,7 +20,7 @@
         z-index: 100;
         background: transparent;
     }
-    
+
     .youtube-player img {
         bottom: 0;
         display: block;
@@ -38,11 +38,11 @@
         -moz-transition: .4s all;
         transition: .4s all;
     }
-    
+
     .youtube-player img:hover {
         -webkit-filter: brightness(75%);
     }
-    
+
     .youtube-player .play {
         height: 72px;
         width: 72px;
@@ -82,6 +82,33 @@
     z-index:1000;
     text-align: center;
 }
+
+/* Adapted from https://www.w3schools.com/howto/howto_js_fullscreen_overlay.asp */
+/* The Overlay (background) */
+.w3schools-overlay {
+  height: 100%;
+  width: 100%;
+  position: fixed; /* Stay in place */
+  z-index: 2000; /* Sit on top */
+  left: 0;
+  top: 0;
+  background-color: rgb(0,0,0); /* Black fallback color */
+  background-color: rgba(0,0,0, 0.4); /* Black w/opacity */
+  overflow-x: hidden; /* Disable horizontal scroll */
+  text-align: center;
+  display: none;
+}
+
+/* Position the content inside the overlay */
+.w3schools-overlay-content {
+  position: relative;
+  background-color: var(--background-color);
+  top: 40px;
+  width: 90%;
+  margin: auto;
+  z-index: 2001; /* Sit on top */
+}
+
 /* Bootstrap theme changes */
 html {
     font-size: var(--font-size);
@@ -623,7 +650,7 @@ h1.splash-header {
 .splash-content {
     text-align: center;
 }
- 
+
 /* https://stackoverflow.com/questions/23001424/how-do-i-get-rid-of-this-blue-halo-around-the-close-dialog-button-with-jqueryui */
 
 .ui-button:focus { outline:none !important }
