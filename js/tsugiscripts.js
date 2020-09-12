@@ -1,13 +1,17 @@
 // The scripts for the TSUGI runtime
 // Needs to be loaded at the end after JQuery is loaded
 
-// Send the CRF token on all of the non-ajax() calls
-$.ajaxSetup({
-    cache: false,
-    headers : {
-        'X-CSRF-Token' : CSRF_TOKEN
-    }
-});
+// Send the CSRF token on all of the non-ajax() calls
+if ( typeof(CSRF_TOKEN) !== 'undefined' ) {
+    $.ajaxSetup({
+        cache: false,
+        headers : {
+            'X-CSRF-Token' : CSRF_TOKEN
+        }
+    });
+} else {
+    $.ajaxSetup({ cache: false });
+}
 
 function doHeartBeat() {
     // Legacy
