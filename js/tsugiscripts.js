@@ -680,7 +680,7 @@ function copyToClipboardNoScroll(parent_element, textToCopy) {
 // TODO: Remove Legacy one of these days
 // https://dev.to/mornir/-how-to-easily-copy-text-to-clipboard-a1a
 function copyToClipboard(par, textToCopy) {
-  copyToClipBoardNoScroll(par, textToCopy);
+  copyToClipboardNoScroll(par, textToCopy);
 }
 
 // Make sure format is present
