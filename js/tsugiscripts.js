@@ -14,39 +14,19 @@ if ( typeof(CSRF_TOKEN) !== 'undefined' ) {
 }
 
 function doHeartBeat() {
-    // Legacy
-    if ( window.HEARTBEAT_URL ) {
-        window.console && console.log('Calling legacy heartbeat to extend session');
-        $.getJSON(HEARTBEAT_URL, function(data) {
-            window.console && console.log(data);
-            if ( data.lti || data.cookie ) {
-                // No problem
-            } else {
-                clearInterval(HEARTBEAT_INTERVAL);
-                HEARTBEAT_INTERVAL = false;
-                alert(_TSUGI.session_expire_message);
-                window.location.href = "about:blank";
+    window.console && console.log('Calling heartbeat to extend session');
+    if ( typeof(_TSUGI.heartbeat_url) == 'undefined' ) return;
+    $.getJSON(_TSUGI.heartbeat_url, function(data) {
+        window.console && console.log(data);
+        if ( data.lti || data.cookie ) {
+            var howlong = _TSUGI.heartbeat;
+            if ( howlong < 5*60*1000 ) {
+                console.log('Timer was too short',howlong);
+               howlong = 5*60*1000;
             }
-        }).fail(function() {
-            console.log( "clearing interval" );
-            clearInterval(HEARTBEAT_INTERVAL);
-            HEARTBEAT_INTERVAL = false;
-        });
-    // New way - Only start timer upon success, add a minimum
-    } else {
-        window.console && console.log('Calling heartbeat to extend session');
-        $.getJSON(_TSUGI.heartbeat_url, function(data) {
-            window.console && console.log(data);
-            if ( data.lti || data.cookie ) {
-                var howlong = _TSUGI.heartbeat;
-                if ( howlong < 5*60*1000 ) {
-                    console.log('Timer was too short',howlong);
-                    howlong = 5*60*1000;
-                }
-                HEARTBEAT_TIMEOUT = setTimeout(doHeartBeat, howlong);
-            }
-        });
-    }
+            HEARTBEAT_TIMEOUT = setTimeout(doHeartBeat, howlong);
+        }
+    });
 }
 
 var DE_BOUNCE_LTI_FRAME_RESIZE_TIMER = false;
@@ -506,7 +486,7 @@ function window_close()
 }
 
 function addSession(url) {
-    if ( ! _TSUGI.ajax_session ) return url;
+    if ( typeof(_TSUGI.ajax_session) == 'undefined' ) return url;
     var retval = url;
     if ( retval.indexOf('?') > 0 ) {
         retval += '&';
@@ -529,6 +509,7 @@ function htmlentities(raw) {
 
 // Get a websocket
 function tsugiNotifySocket(room) {
+    if ( typeof(_TSUGI.websocket_url) == 'undefined' ) return;
     if ( window.WebSocket && _TSUGI.websocket_url && _TSUGI.websocket_token ) {
         var url = _TSUGI.websocket_url+'/notify?token=';
         url = url + encodeURIComponent(_TSUGI.websocket_token);
@@ -729,4 +710,12 @@ function tsugiCheckFileMaxSize () {
             return isOk;
         });
     });
+}
+
+if ( typeof(_TSUGI) == 'undefined' ) {
+     var _TSUGI = {
+            staticroot: "https://static.tsugi.org/",
+            window_close_message: "Application complete",
+            session_expire_message: "Your session has expired"
+     }
 }
