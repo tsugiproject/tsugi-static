@@ -14,17 +14,23 @@ if ( typeof(CSRF_TOKEN) !== 'undefined' ) {
 }
 
 function doHeartBeat() {
-    window.console && console.log('Calling heartbeat to extend session');
-    if ( typeof(_TSUGI.heartbeat_url) == 'undefined' ) return;
+    var d = new Date();
+    window.console && console.log('Heartbeat '+d);
+    if ( typeof(_TSUGI.heartbeat_url) == 'undefined' ) {
+        console.log('Heartbeat url not defined');
+        return;
+    }
     $.getJSON(_TSUGI.heartbeat_url, function(data) {
         window.console && console.log(data);
         if ( data.lti || data.cookie ) {
             var howlong = _TSUGI.heartbeat;
             if ( howlong < 5*60*1000 ) {
-                console.log('Timer was too short',howlong);
+               console.log('Timer was too short',howlong);
                howlong = 5*60*1000;
             }
             HEARTBEAT_TIMEOUT = setTimeout(doHeartBeat, howlong);
+        } else {
+            console.log('Heartbeat turned off - no longer logged in');
         }
     });
 }
