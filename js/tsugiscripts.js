@@ -132,7 +132,9 @@ window.addEventListener('message', function (e) {
     // console.log(window.location.href + " got message");
     // console.log(e.data);
     try {
-        var message = JSON.parse(e.data);
+        var message = e.data;
+        if ( typeof message == 'string' ) message = JSON.parse(e.data);
+
         switch (message.subject) {
             case 'lti.frameResize':
                 var height = message.height;
