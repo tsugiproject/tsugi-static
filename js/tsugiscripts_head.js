@@ -32,3 +32,8 @@ function inIframe () {
     }
 }
 
+// https://stackoverflow.com/questions/8511281/check-if-a-value-is-an-object-in-javascript/51241694
+function isObject(inp) {
+    return typeof inp == 'object' && inp != null && ! Array.isArray(inp);
+}
+
