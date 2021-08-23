@@ -423,11 +423,11 @@ label.h5 {
     color: var(--secondary-menu);
     opacity: 1;
 }
-.navbar-inverse .nav > li:hover > a,
-.navbar-inverse .nav > li:focus > a,
+.navbar-inverse .nav > li > a:hover,
+.navbar-inverse .nav > li > a:focus,
 .navbar-inverse .nav > li.active > a,
-.navbar-inverse .nav > li.active:hover > a,
-.navbar-inverse .nav > li.active:focus > a {
+.navbar-inverse .nav > li.active > a:hover,
+.navbar-inverse .nav > li.active > a:focus {
     border-bottom-color: var(--secondary-menu);
     opacity: 1;
 }
