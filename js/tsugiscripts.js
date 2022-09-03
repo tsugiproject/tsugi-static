@@ -485,11 +485,13 @@ if (window.fetch) {
 }
 
 // https://stackoverflow.com/questions/19761241/window-close-and-self-close-do-not-close-the-window-in-chrome
+// https://www.geeksforgeeks.org/how-to-close-window-using-javascript-which-is-opened-by-the-user-with-a-url/
 // How to close a window even if we did not open it
 function window_close()
 {
     window.close();
     setTimeout(function(){ console.log("Attempting self.close"); self.close(); }, 1000);
+    setTimeout(function(){ console.log("Attempting new_window _self close"); let new_window = open(location, '_self'); new_window.close(); }, 500);
     setTimeout(function(){ console.log("Notifying the user."); alert(_TSUGI.window_close_message); open("about:blank", '_self').close(); }, 2000);
 }
 
