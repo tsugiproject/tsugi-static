@@ -1,3 +1,5 @@
+@import './theme-customizations.css';
+
 /* http://www.labnol.org/internet/light-youtube-embeds/27941/ */
 
     .youtube-player {
@@ -197,6 +199,12 @@ fieldset[disabled] .btn-primary.focus {
 .btn-primary .badge {
     color: var(--primary-darkest);
     background-color: var(--secondary);;
+}
+.btn-under {
+    margin-top: 10px;
+}
+.checkbox input, .radio input {
+    margin-top: 7px;
 }
 h1, .h1 {
     font-weight: 900;
@@ -423,11 +431,11 @@ label.h5 {
     color: var(--secondary-menu);
     opacity: 1;
 }
-.navbar-inverse .nav > li > a:hover,
-.navbar-inverse .nav > li > a:focus,
+.navbar-inverse .nav > li:hover > a,
+.navbar-inverse .nav > li:focus > a,
 .navbar-inverse .nav > li.active > a,
-.navbar-inverse .nav > li.active > a:hover,
-.navbar-inverse .nav > li.active > a:focus {
+.navbar-inverse .nav > li.active:hover > a,
+.navbar-inverse .nav > li.active:focus > a {
     border-bottom-color: var(--secondary-menu);
     opacity: 1;
 }
