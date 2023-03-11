@@ -1,0 +1,167 @@
+/*
+Customizations specifically related to theming
+This is imported at the top of tsugi2.css
+*/
+body a {
+    color: var(--text);
+    text-decoration: underline;
+}
+.navbar a, .panel-heading a, a.btn {
+    text-decoration: none;
+}
+.modal-header, .modal-content, .modal-body, .modal-footer {
+    background-color: var(--background-focus);
+}
+.modal-header .close {
+    color: var(--text);
+    opacity: .7;
+}
+a.btn-link, button.btn-link {
+    text-decoration: underline;
+    color: var(--text);
+}
+a.btn-link:hover, button.btn-link:hover, button.btn-link:focus {
+    text-decoration: underline;
+    color: var(--text);
+}
+.btn-outline-background {
+    background-color: var(--background-color);
+    color: var(--text);
+    border: 1px solid var(--text);
+}
+.btn-outline-background:hover {
+    background-color: var(--background-focus);
+    color: var(--text);
+    border: 1px solid var(--text);
+}
+body a:hover, body a:focus {
+    color: var(--text);
+}
+.panel-heading a:hover {
+    color: var(--secondary-menu);
+}
+input[type='text'], input[type='password'], input[type='email'], textarea {
+    /* To keep text visible even in dark mode (input bg remains white) */
+    color: black;
+}
+.dropdown-menu {
+    background-color: var(--background-color);
+    border-color: var(--background-focus);
+    box-shadow: 0 1px 2px var(--text);
+}
+.dropdown-menu a.dropdown-menu-item {
+    color: var(--text);
+}
+.dropdown-menu a.dropdown-menu-item:hover {
+    background-color: var(--background-focus);
+    color: var(--text);
+}
+.dropdown-menu>li>a {
+    color: var(--text);
+}
+.tool-icon {
+    color: var(--text);
+}
+.nav-tabs {
+    border-color: var(--background-focus);
+}
+.nav-tabs:not(.active) a {
+    color: var(--text);
+    border-color: var(--background-focus);
+    background-color: var(--background-focus);
+}
+.nav-tabs>li>a:hover {
+    background-color: var(--background-focus);
+    border-color: var(--background-focus);
+}
+.panel-body {
+    background-color: var(--background-color);
+}
+.panel-default:hover {
+    border: 1px solid var(--text);
+    box-shadow: 0 2px 3px var(--text);
+}
+.debug-output {
+    background-color: var(--background-focus);
+    color: var(--text);
+}
+.ui-widget-content {
+    background: var(--background-color);
+    border-color: var(--background-focus);
+    color: var(--text);
+}
+.ui-widget-content iframe {
+    /* Leaving as white for now, font color remained black */
+    background-color: white;
+}
+.ui-widget .ui-widget-content a {
+    color: var(--background-accent);
+}
+.ui-widget .ui-widget-content a:hover {
+    color: var(--text);
+}
+.ui-widget .ui-dialog-titlebar {
+    background: var(--primary);
+    border: none;
+}
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: var(--background-focus);
+}
+.table-hover>tbody>tr:nth-of-type(odd):hover {
+    background-color: var(--background-focus);
+}
+.table-hover>tbody>tr:nth-of-type(even):hover {
+    background-color: var(--background-color);
+}
+.table>thead>tr>th.info, .table>thead>tr>th.success {
+    background-color: var(--background-color);
+}
+.btn-warning, .btn-warning:active {
+    color: var(--secondary);
+    background-color: #555;
+    border-color: #555;
+}
+.btn-warning:hover, .btn-warning:focus {
+    color: var(--secondary);
+    background-color: #444;
+    border-color: #444;
+}
+body .btn-primary {
+    color: var(--secondary);
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+body .btn-primary:hover {
+    color: var(--secondary);
+    background-color: var(--primary-darker);
+    border-color: var(--primary-darker);
+}
+select {
+    color: black;
+}
+body .bx-wrapper .bx-pager.bx-default-pager a {
+    background: var(--text);
+    border: 1px solid var(--primary);
+}
+body .bx-wrapper .bx-pager.bx-default-pager a:hover {
+    background: var(--background-accent);
+}
+body .bx-wrapper .bx-pager.bx-default-pager a.active {
+    background: var(--background-accent);
+    border: 1px solid var(--text);
+}
+.panel .ribbon span {
+    color: var(--primary);
+    background-color: var(--secondary-menu);
+}
+.panel .ribbon span::before {
+    border-left-color: var(--primary-border);
+    border-top-color: var(--primary-border);
+}
+.panel .ribbon span::after {
+    border-right-color: var(--primary-border);
+    border-top-color: var(--primary-border);
+}
+.ck {
+    color: black;
+}
