@@ -3,8 +3,7 @@ Customizations specifically related to theming
 This is imported at the top of tsugi2.css
 */
 body a {
-    color: var(--text);
-    text-decoration: underline;
+    color: var(--text-light);
 }
 .navbar a, .panel-heading a, a.btn {
     text-decoration: none;
