@@ -91,6 +91,13 @@ function lti_frameResizeNow(new_height, element_id) {
     DE_BOUNCE_LTI_FRAME_RESIZE_HEIGHT = new_height;
 }
 
+function lti_gradeChangeNotify() {
+    parent.postMessage(JSON.stringify({
+      subject: "lti.gradeChangeNotify",
+      show: false
+    }), "*");
+}
+
 function lti_hideLMSNavigation() {
     parent.postMessage(JSON.stringify({
       subject: "lti.hideModuleNavigation",
