@@ -303,7 +303,8 @@ function labnolStopPlayers() {
     }
 }
 
-function labnolIframe() {
+// Original with cookie
+function labnolIframeOrig() {
     labnolStopPlayers();
 
     var iframe = document.createElement("iframe");
@@ -317,6 +318,36 @@ function labnolIframe() {
     iframe.setAttribute("mozallowfullscreen", "1");
     this.parentNode.replaceChild(iframe, this);
 }
+
+// No Cookie
+function labnolIframe() {
+  labnolStopPlayers();
+
+  var iframe = document.createElement("iframe");
+  var embed =
+    "https://www.youtube-nocookie.com/embed/ID" +
+    "?autoplay=1" +
+    "&rel=0" +
+    "&modestbranding=1" +
+    "&playsinline=1";
+
+  iframe.setAttribute("src", embed.replace("ID", this.dataset.id));
+  iframe.setAttribute("frameborder", "0");
+  iframe.setAttribute("class", "generated-youtube-frame");
+  iframe.setAttribute("data-id", this.dataset.id);
+
+  // modern
+  iframe.setAttribute("allowfullscreen", "");
+  iframe.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
+
+  // legacy (optional; harmless)
+  // iframe.setAttribute("webkitAllowFullScreen", "1");
+  // iframe.setAttribute("mozallowfullscreen", "1");
+
+  this.parentNode.replaceChild(iframe, this);
+}
+
+
 
 var TSUGI_TEMPLATES = {};
 
