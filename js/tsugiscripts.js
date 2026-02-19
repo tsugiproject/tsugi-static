@@ -303,7 +303,25 @@ function labnolStopPlayers() {
     }
 }
 
-// Original with cookie
+// Theatre mode open in new window - works 2026-02-18 with stricter YouTube rules
+function labnolIframe(e) {
+  e.preventDefault();
+
+  const id = this.dataset.id;
+
+  const url =
+    "https://www.youtube.com/watch?v=" +
+    encodeURIComponent(id) +
+    "&rel=0" +            // fewer suggested videos
+    "&modestbranding=1" + // cleaner chrome
+    "&autoplay=0";        // explicit, predictable behavior
+
+  window.open(url, "_blank", "noopener,noreferrer");
+
+  return false;
+}
+
+// Original with cookie - Fails in 2026 with autobot detection on YouTube
 function labnolIframeOrig() {
     labnolStopPlayers();
 
@@ -319,8 +337,8 @@ function labnolIframeOrig() {
     this.parentNode.replaceChild(iframe, this);
 }
 
-// No Cookie
-function labnolIframe() {
+// No Cookie - Fails in 2026 with autobot detection on YouTube
+function labnolIframeNoCookie() {
   labnolStopPlayers();
 
   var iframe = document.createElement("iframe");
