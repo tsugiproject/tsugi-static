@@ -304,25 +304,36 @@ function labnolStopPlayers() {
 }
 
 // Theatre mode open in new window - works 2026-02-18 with stricter YouTube rules
+// Theatre mode open in new window - playlist aware
 function labnolIframe(e) {
-  e.preventDefault();
-
-  const id = this.dataset.id;
-
-  const url =
-    "https://www.youtube.com/watch?v=" +
-    encodeURIComponent(id) +
-    "&rel=0" +            // fewer suggested videos
-    "&modestbranding=1" + // cleaner chrome
-    "&autoplay=0";        // explicit, predictable behavior
-
-  window.open(url, "_blank", "noopener,noreferrer");
-
-  const overlay = this.closest(".w3schools-overlay");
-  if (overlay) overlay.style.display = "none";
-
-  return false;
-}
+    e.preventDefault();
+  
+    const id = this.dataset.id;
+  
+    let url =
+      "https://www.youtube.com/watch?v=" +
+      encodeURIComponent(id);
+  
+    // Add playlist context ONLY if defined and non-empty
+    if (typeof _TSUGI.youtube_playlist !== "undefined" && _TSUGI.youtube_playlist && _TSUGI.youtube_playlist.length > 0) {
+      url += "&list=" + encodeURIComponent(_TSUGI.youtube_playlist);
+    }
+  
+    // Additional playback flags
+    url +=
+      "&rel=0" +            // fewer suggested videos
+      "&modestbranding=1" + // cleaner chrome
+      "&autoplay=0";        // explicit, predictable behavior
+  
+    console.log("Opening YouTube URL: "+url);
+    window.open(url, "_blank", "noopener,noreferrer");
+  
+    const overlay = this.closest(".w3schools-overlay");
+    if (overlay) overlay.style.display = "none";
+  
+    return false;
+  }
+  
 
 // Original with cookie - Fails in 2026 with autobot detection on YouTube
 function labnolIframeOrig() {
