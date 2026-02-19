@@ -318,6 +318,9 @@ function labnolIframe(e) {
 
   window.open(url, "_blank", "noopener,noreferrer");
 
+  const overlay = this.closest(".w3schools-overlay");
+  if (overlay) overlay.style.display = "none";
+
   return false;
 }
 
