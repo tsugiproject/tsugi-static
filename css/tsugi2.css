@@ -662,3 +662,80 @@ h1.splash-header {
 /* https://stackoverflow.com/questions/23001424/how-do-i-get-rid-of-this-blue-halo-around-the-close-dialog-button-with-jqueryui */
 
 .ui-button:focus { outline:none !important }
+
+/* Semantic two-level list for assignments progress (replaces table layout) */
+.assignments-progress-list,
+.assignments-progress-list ul,
+.assignments-items,
+.assignments-items li,
+.assignments-module {
+  list-style: none;
+  list-style-type: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+.assignments-progress-list {
+  padding: 0;
+  margin: 0 0 20px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.assignments-module {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.assignments-module-link {
+  display: block;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #d9edf7;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  color: #31708f;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+.assignments-module:first-child .assignments-module-link {
+  border-top: none;
+}
+.assignments-module-link:hover {
+  background-color: #bce8f1;
+  color: #31708f;
+}
+.assignments-items {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.assignments-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 15px;
+  border-bottom: 1px solid #ddd;
+  background-color: #fff;
+  box-sizing: border-box;
+}
+.assignments-item:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+.assignments-item:hover {
+  background-color: #f5f5f5 !important;
+}
+.assignments-item:last-child {
+  border-bottom: none;
+}
+.assignments-status {
+  flex: 0 0 24px;
+  padding-right: 8px;
+}
+.assignments-title {
+  flex: 1;
+  min-width: 0;
+}
+.assignments-score {
+  flex: 0 0 auto;
+  text-align: right;
+  padding-left: 15px;
+}
