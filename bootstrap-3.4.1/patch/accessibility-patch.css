@@ -1,0 +1,16 @@
+/**
+ * Accessibility patches for Bootstrap 3.4.1
+ * Included right after bootstrap.min.css to override WCAG contrast failures.
+ */
+
+/* Override Bootstrap .text-muted for WCAG contrast. Bootstrap's default fails WAVE checks. #555 on white ≈ 7.4:1 (AA compliant). */
+.text-muted {
+  color: #555 !important;
+}
+
+/* Override .btn-danger for WCAG contrast (Bootstrap f-up). #c9302c on #fff ≈ 5.33:1 */
+.btn-danger {
+  color: #fff;
+  background-color: #c9302c;
+  border-color: #ac2925;
+}
