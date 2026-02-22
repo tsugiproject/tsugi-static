@@ -14,3 +14,14 @@
   background-color: #c9302c;
   border-color: #ac2925;
 }
+
+/* Pagination: Bootstrap uses #777 for links/disabled (4.47:1), fails WCAG AA. #595959 on white ≈ 6.6:1 */
+/* Bootstrap 4/5: .page-link */
+.pagination .page-link {
+  color: #595959;
+}
+/* Bootstrap 3: disabled state only (default links use #337ab7 which is fine) */
+.pagination > .disabled > a,
+.pagination > .disabled > span {
+  color: #595959;
+}
