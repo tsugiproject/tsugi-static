@@ -13,6 +13,16 @@ if ( typeof(CSRF_TOKEN) !== 'undefined' ) {
     $.ajaxSetup({ cache: false });
 }
 
+// Make sure _TSUGI is defined
+
+if ( typeof(_TSUGI) == 'undefined' ) {
+     var _TSUGI = {
+            staticroot: "https://static.tsugi.org/",
+            window_close_message: "Application complete",
+            session_expire_message: "Your session has expired"
+     }
+}
+
 function doHeartBeat() {
     var d = new Date();
     window.console && console.log('Heartbeat '+d);
@@ -789,14 +799,6 @@ function tsugiCheckFileMaxSize () {
             return isOk;
         });
     });
-}
-
-if ( typeof(_TSUGI) == 'undefined' ) {
-     var _TSUGI = {
-            staticroot: "https://static.tsugi.org/",
-            window_close_message: "Application complete",
-            session_expire_message: "Your session has expired"
-     }
 }
 
 // Store _TSUGI in browser session storage - very defensive
