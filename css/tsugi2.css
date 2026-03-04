@@ -739,3 +739,19 @@ h1.splash-header {
   text-align: right;
   padding-left: 15px;
 }
+
+/* Skip link for accessibility */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    z-index: 999;
+    padding: 1rem 1.5rem;
+    background: var(--primary, #337ab7);
+    color: white;
+    text-decoration: none;
+    border-radius: 0 0 4px 0;
+}
+.skip-link:focus {
+    left: 0;
+    top: 0;
+}
