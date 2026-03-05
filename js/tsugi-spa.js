@@ -1,19 +1,21 @@
 /*!
- * tsugi-spa.js
+ * tsugi-spa.js  (with DRY-RUN support)
  * -----------------------------------------------------------------------------
  * One-file helper for Tsugi-style “mostly page-load” apps:
  *   - Optional TRANS_SID (cookieless session propagation)
  *   - Optional CSRF (JS-first CSRF injection + fetch header)
  *
- * NEW BEHAVIOR (guard + onload):
- *   - This file does NOTHING unless it is configured “enough” at load time.
- *   - It waits for DOMContentLoaded before doing any work.
- *   - If neither TRANS_SID nor CSRF is fully configured at that time, it:
- *       • does NOT install MutationObserver
- *       • does NOT monkey-patch fetch()
- *       • does NOT attach click/submit handlers
+ * GUARD + ONLOAD:
+ *   - Runs only after DOMContentLoaded.
+ *   - Does NOTHING unless TRANS_SID or CSRF is fully configured at load time.
  *
- * See tsugi-spa.md for usage.
+ * DRY-RUN:
+ *   - Set window.TRANS_SID.dryRun = true to log what would be changed
+ *     without mutating the DOM or request headers/URLs.
+ *   - CSRF also supports window.CSRF.dryRun = true (log-only).
+ *
+ * Notes:
+ *   - Only ONE fetch() wrapper is installed (no stacking).
  */
 
 (() => {
@@ -29,19 +31,13 @@
   const safeUrl = (raw) => { try { return new URL(raw, location.href); } catch { return null; } };
 
   // ---------------------------------------------------------------------------
-  // Run on DOMContentLoaded (handled onload)
+  // Run on DOMContentLoaded
   // ---------------------------------------------------------------------------
   const run = () => {
-    // -------------------------------------------------------------------------
-    // Read configs at load time
-    // -------------------------------------------------------------------------
     const TS = window.TRANS_SID || {};
     const CS = window.CSRF || {};
 
     // --- TRANS_SID "fully configured" criteria ---
-    // We require:
-    //   - name + value
-    //   - at least one path prefix (tight scoping)
     const TS_NAME  = trim(TS.name);
     const TS_VALUE = trim(TS.value);
 
@@ -52,11 +48,11 @@
     })();
 
     const TS_ENABLED = !!(TS_NAME && TS_VALUE && TS_PATH_PREFIXES.length > 0);
+    const TS_DEBUG = !!TS.debug;
+    const TS_DRYRUN = !!TS.dryRun;
+    const tsLog = (...a) => { if (TS_DEBUG || TS_DRYRUN) console.log("[TSUGI-SPA][TRANS_SID]", ...a); };
 
     // --- CSRF "fully configured" criteria ---
-    // We require a token exposed to JS via:
-    //   - <meta name="csrf-token" content="..."> OR
-    //   - window.CSRF_TOKEN (or configured tokenGlobalName)
     const CS_ENABLED = (CS.enabled !== false);
     const CS_META_NAME = trim(CS.tokenMetaName) || "csrf-token";
     const CS_GLOBAL_NAME = trim(CS.tokenGlobalName) || "CSRF_TOKEN";
@@ -69,22 +65,20 @@
     })();
 
     const CS_TOKEN_ENABLED = CS_ENABLED && !!csrfToken;
+    const CS_DEBUG = !!CS.debug;
+    const CS_DRYRUN = !!CS.dryRun;
+    const csLog = (...a) => { if (CS_DEBUG || CS_DRYRUN) console.log("[TSUGI-SPA][CSRF]", ...a); };
 
-    // -------------------------------------------------------------------------
-    // HARD GUARD: If not configured, do NOTHING (no observers, no fetch patch).
-    // -------------------------------------------------------------------------
+    // HARD GUARD: no config => do nothing (no observers, no fetch patch)
     if (!TS_ENABLED && !CS_TOKEN_ENABLED) return;
 
-    // Avoid double-install if script is included twice
+    // Avoid double-install if included twice
     if (window.__TSUGI_SPA_INSTALLED__) return;
     window.__TSUGI_SPA_INSTALLED__ = true;
 
     // -------------------------------------------------------------------------
     // TRANS_SID derived config
     // -------------------------------------------------------------------------
-    const TS_DEBUG = !!TS.debug;
-    const tsLog = (...a) => { if (TS_DEBUG) console.log("[TRANS_SID]", ...a); };
-
     const TS_OPT_OUT = trim(TS.optOutAttr) || "data-no-trans-sid";
 
     const TS_HOST_WHITELIST = isArr(TS.hostWhitelist)
@@ -151,13 +145,9 @@
     // -------------------------------------------------------------------------
     // CSRF derived config
     // -------------------------------------------------------------------------
-    const CS_DEBUG = !!CS.debug;
-    const csLog = (...a) => { if (CS_DEBUG) console.log("[CSRF]", ...a); };
-
     const CS_OPT_OUT = trim(CS.optOutAttr) || "data-no-csrf";
     const CS_FIELD = trim(CS.fieldName) || "csrf";
     const CS_HEADER = trim(CS.headerName) || "X-CSRF";
-
     const csHasOptOut = (el) => !!(el && el.closest && el.closest(`[${CS_OPT_OUT}]`));
 
     // -------------------------------------------------------------------------
@@ -176,8 +166,12 @@
 
       const next = tsAddParamToUrlString(href, TS_HOST_WHITELIST);
       if (next !== href) {
-        a.setAttribute("href", next);
-        tsLog("<a>", href, "->", next);
+        if (TS_DRYRUN) {
+          tsLog("DRYRUN <a> would patch", href, "->", next);
+        } else {
+          a.setAttribute("href", next);
+          tsLog("<a>", href, "->", next);
+        }
       }
     }
 
@@ -190,6 +184,13 @@
       if (method === "post") {
         // Idempotency: if server already injected any known field, leave it alone.
         if (tsFormHasAnyHiddenField(form, TS_PRESENT_POST_FIELDS)) return;
+
+        // Ensure hidden field
+        const exists = !!form.querySelector(`input[type="hidden"][name="${CSS.escape(TS_NAME)}"]`);
+        if (TS_DRYRUN) {
+          tsLog("DRYRUN <form POST> would ensure hidden", TS_NAME, "=", TS_VALUE, exists ? "(update)" : "(insert)");
+          return;
+        }
 
         let inp = form.querySelector(`input[type="hidden"][name="${CSS.escape(TS_NAME)}"]`);
         if (!inp) {
@@ -206,8 +207,12 @@
       const action = form.getAttribute("action") || (location.pathname + location.search);
       const next = tsAddParamToUrlString(action, TS_HOST_WHITELIST);
       if (next !== action) {
-        form.setAttribute("action", next);
-        tsLog("<form GET>", action, "->", next);
+        if (TS_DRYRUN) {
+          tsLog("DRYRUN <form GET> would patch action", action, "->", next);
+        } else {
+          form.setAttribute("action", next);
+          tsLog("<form GET>", action, "->", next);
+        }
       }
     }
 
@@ -220,8 +225,12 @@
 
       const next = tsAddParamToUrlString(src, TS_IFRAME_WHITELIST);
       if (next !== src) {
-        ifr.setAttribute("src", next);
-        tsLog("<iframe>", src, "->", next);
+        if (TS_DRYRUN) {
+          tsLog("DRYRUN <iframe> would patch", src, "->", next);
+        } else {
+          ifr.setAttribute("src", next);
+          tsLog("<iframe>", src, "->", next);
+        }
       }
     }
 
@@ -235,6 +244,13 @@
 
       const method = (form.getAttribute("method") || "get").toLowerCase();
       if (method !== "post") return;
+
+      const hasField = !!form.querySelector(`input[type="hidden"][name="${CSS.escape(CS_FIELD)}"]`);
+
+      if (CS_DRYRUN) {
+        csLog("DRYRUN <form POST> would ensure hidden", CS_FIELD, "=<token>", hasField ? "(update)" : "(insert)");
+        return;
+      }
 
       let inp = form.querySelector(`input[type="hidden"][name="${CSS.escape(CS_FIELD)}"]`);
       if (!inp) {
@@ -253,7 +269,6 @@
     function patchSubtree(root) {
       if (!root || !(root instanceof Element || root === document)) return;
 
-      // Include root itself if it matches
       if (root instanceof HTMLAnchorElement && root.hasAttribute("href")) tsRewriteAnchor(root);
       if (root instanceof HTMLFormElement) {
         tsRewriteForm(root);
@@ -268,7 +283,6 @@
         q(`form:not([${TS_OPT_OUT}])`).forEach(tsRewriteForm);
         q(`iframe[src]:not([${TS_OPT_OUT}])`).forEach(tsRewriteIframe);
       }
-
       if (CS_TOKEN_ENABLED) {
         q(`form:not([${CS_OPT_OUT}])`).forEach(csEnsurePostFormToken);
       }
@@ -277,7 +291,7 @@
     // Initial pass
     patchSubtree(document);
 
-    // Submit safety net
+    // Event safety nets (noop in dryrun except logs)
     document.addEventListener("submit", (e) => {
       if (e.target instanceof HTMLFormElement) {
         tsRewriteForm(e.target);
@@ -285,7 +299,6 @@
       }
     }, true);
 
-    // Click safety net (just-in-time link rewrite)
     document.addEventListener("click", (e) => {
       const a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
       if (a) tsRewriteAnchor(a);
@@ -296,10 +309,6 @@
       for (const m of muts) {
         for (const node of m.addedNodes) {
           if (!(node instanceof Element)) continue;
-
-          // If entire subtree is opted out of both, skip quickly
-          if (TS_ENABLED && tsHasOptOut(node) && (!CS_TOKEN_ENABLED || csHasOptOut(node))) continue;
-
           patchSubtree(node);
         }
       }
@@ -307,7 +316,7 @@
     obs.observe(document.documentElement, { childList: true, subtree: true });
 
     // -------------------------------------------------------------------------
-    // One-and-only fetch() monkey patch (ONLY if configured)
+    // One-and-only fetch() monkey patch (supports dryrun)
     // -------------------------------------------------------------------------
     if (typeof window.fetch === "function" && (TS_FETCH_ENABLED || CS_TOKEN_ENABLED)) {
       if (!window.__TSUGI_SPA_FETCH_WRAPPED__) {
@@ -316,7 +325,7 @@
         const origFetch = window.fetch.bind(window);
 
         window.fetch = (input, init = {}) => {
-          // TRANS_SID per-call opt-out flag (if configured)
+          // TRANS_SID per-call opt-out flag
           let transSidOptOut = false;
           if (TS_FETCH_ENABLED && init && init[TS_FETCH_OPT_OUT_FLAG]) {
             transSidOptOut = true;
@@ -341,30 +350,41 @@
 
             if (touch) {
               const already = TS_FETCH_PRESENT_HEADERS.some(h => headers.has(h));
-              if (!already) headers.set(TS_FETCH_HEADER, TS_VALUE);
+              if (!already) {
+                if (TS_DRYRUN) tsLog("DRYRUN fetch would add header", TS_FETCH_HEADER);
+                else headers.set(TS_FETCH_HEADER, TS_VALUE);
+              }
 
-              // Optional query param for fetch URLs
+              // Optional query param on fetch URL
               if (TS_FETCH_ADD_QUERY && !tsHasAnyParam(url, TS_PRESENT_PARAMS)) {
-                url.searchParams.set(TS_NAME, TS_VALUE);
-                if (typeof input === "string") input = url.toString();
-                else if (input instanceof Request) input = new Request(url.toString(), input);
+                if (TS_DRYRUN) {
+                  tsLog("DRYRUN fetch would add query param", TS_NAME);
+                } else {
+                  url.searchParams.set(TS_NAME, TS_VALUE);
+                  if (typeof input === "string") input = url.toString();
+                  else if (input instanceof Request) input = new Request(url.toString(), input);
+                }
               }
             }
           }
 
-          // CSRF header injection (independent)
+          // CSRF header injection
           if (CS_TOKEN_ENABLED) {
-            if (!headers.has(CS_HEADER)) headers.set(CS_HEADER, csrfToken);
+            if (!headers.has(CS_HEADER)) {
+              if (CS_DRYRUN) csLog("DRYRUN fetch would add header", CS_HEADER);
+              else headers.set(CS_HEADER, csrfToken);
+            }
           }
 
+          // In DRYRUN mode we still perform the actual fetch; we just don't mutate
+          // headers/URLs. (So behavior stays unchanged.)
           if (input instanceof Request) return origFetch(new Request(input, { ...init, headers }));
           return origFetch(input, { ...init, headers });
         };
       }
     }
 
-    // Minimal helpers (safe)
-    // Note: we only attach helpers if TRANS_SID is enabled.
+    // Helpers (attach only if TRANS_SID enabled)
     if (TS_ENABLED) {
       TS.add = (u) => tsAddParamToUrlString(u, TS_HOST_WHITELIST);
       TS.addIframe = (u) => tsAddParamToUrlString(u, TS_IFRAME_WHITELIST);

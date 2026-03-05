@@ -1,92 +1,130 @@
 # tsugi-spa.md
 
-**Design + Usage Notes for `tsugi-spa.js`**
-
-This document explains what `tsugi-spa.js` does, how to configure it, and which invariants must be preserved if it is modified in the future (by humans or AI tools).
+**Design and Usage Guide for `tsugi-spa.js` (Guard + Onload + Dry-Run)**
 
 ---
 
-## What `tsugi-spa.js` is
+# What this file is
 
-`tsugi-spa.js` is a **single JS file** that provides two independent capabilities:
+`tsugi-spa.js` is a **single JavaScript file** that can provide two independent, optional capabilities:
 
-1. **Cookieless session propagation (“trans_sid-like”)** *(optional)*
-2. **JS-first CSRF support** *(recommended)*
+1. **TRANS_SID** — controlled, browser-side “trans_sid-like” cookieless session propagation
+2. **CSRF** — JavaScript-first CSRF protection (POST form injection + fetch header)
 
-Both are designed for Tsugi-style applications that can operate in:
+It is designed for Tsugi systems that operate as both:
 
-* **cookie mode** (LMS UI pages using `PHPSESSID` cookies), and/or
-* **cookieless mode** (embedded tool pages using URL params / headers)
+* an **LMS** (cookie session via `PHPSESSID`)
+* a **tool platform** (sometimes cookieless / embedded)
 
-The file is intended to be safe to run during a **migration period** where:
+It is also designed to support a **transition period** where the same codebase must run on:
 
-* some servers still do server-side `trans_sid` rewriting (pre–PHP 9), and
-* other servers do not (post–PHP 9).
-
----
-
-## High-level behavior
-
-### A) TRANS_SID (optional)
-
-If configured (requires `window.TRANS_SID.name` and `window.TRANS_SID.value`), the script:
-
-* rewrites navigation elements to include a session parameter:
-
-  * `<a href>`
-  * `<form method="get" action>`
-  * `<iframe src>`
-* injects a hidden field into `<form method="post">` (within the same tight scope)
-* monkey-patches `fetch()` to attach a header (default `X-Trans-Sid`) for eligible requests
-
-**Crucial constraint:** rewriting is limited to *configured path prefixes* and whitelisted hosts.
-
-### B) CSRF (independent)
-
-If configured with a token (via `<meta name="csrf-token">` or `window.CSRF_TOKEN`), the script:
-
-* injects a hidden CSRF field into **all POST forms** (unless opted out)
-* adds an `X-CSRF` header on `fetch()` calls
-
-CSRF does **not** depend on TRANS_SID being enabled and works for:
-
-* cookie-based sessions (LMS pages)
-* cookieless sessions (tool pages)
+* servers that still do server-side `trans_sid` rewriting (pre–PHP 9), and
+* servers that do not (post–PHP 9).
 
 ---
 
-## Why one file
+# Load behavior: Guard + Onload
 
-`tsugi-spa.js` installs **exactly one** `fetch()` wrapper, to avoid “double monkey patch” issues where multiple wrappers accidentally drop headers or change request behavior.
+## DOMContentLoaded only
 
-Both TRANS_SID and CSRF add headers through this single wrapper.
+The script runs only after **DOMContentLoaded**.
+
+## Hard guard (does nothing unless configured)
+
+On DOMContentLoaded it checks whether at least one feature is fully configured:
+
+### TRANS_SID is “fully configured” only if:
+
+* `window.TRANS_SID.name` is non-empty
+* `window.TRANS_SID.value` is non-empty
+* `window.TRANS_SID.pathPrefixes` has at least one entry
+
+### CSRF is “fully configured” only if:
+
+* CSRF is enabled (default: enabled), AND
+* a CSRF token is available via:
+
+  * `<meta name="csrf-token" content="...">`, OR
+  * `window.CSRF_TOKEN` (or the configured `tokenGlobalName`)
+
+### If neither is fully configured:
+
+**The file exits immediately and has zero side effects:**
+
+* no MutationObserver
+* no submit/click handlers
+* no fetch() monkey patch
+* no DOM rewriting
+
+This makes it safe to include `tsugi-spa.js` globally without “mystery behavior.”
 
 ---
 
-## Configuration
+# Dry-run mode (shadow rollout)
 
-### 1) TRANS_SID (optional)
+Both features support **dry-run mode**, intended for learning/testing:
 
-If `name` and `value` are missing/empty, TRANS_SID features are disabled and CSRF still works.
+* it logs what it **would** change
+* it does not mutate DOM URLs or form fields
+* it does not add headers/query params to requests
 
-Example:
+This is useful during migration:
+
+* run your legacy behavior first
+* load `tsugi-spa.js` afterwards in dry-run to see what it would have done
+* then switch to active mode later
+
+---
+
+# Feature 1: TRANS_SID (optional)
+
+## Purpose
+
+TRANS_SID provides a controlled replacement for PHP’s historic `trans_sid` URL rewriting, but with tight scope control.
+
+## Behavior (when enabled)
+
+TRANS_SID can:
+
+1. rewrite navigation URLs by appending a query parameter:
+
+* `<a href>`
+* `<form method="get" action>`
+* `<iframe src>`
+
+2. inject a hidden field into POST forms:
+
+* `<form method="post">`
+
+3. add a header on eligible fetch() calls:
+
+* `X-Trans-Sid: <session value>`
+
+## Scope controls
+
+TRANS_SID rewriting occurs only if:
+
+* the destination host matches `hostWhitelist` / `iframeWhitelist`
+* the path begins with one of `pathPrefixes`
+
+This prevents session leakage to unrelated paths.
+
+---
+
+## Example configuration
 
 ```javascript
 window.TRANS_SID = {
   name: "_LTI_TSUGI",
   value: "ec93fe964ac8d8aecdbb167fee5bf0f9",
 
-  // Tight tool scope (do NOT use "/")
+  // Tight scope - do NOT use "/"
   pathPrefixes: ["/mod/tdiscus/"],
 
-  // Exact host match (defaults to [location.host])
   hostWhitelist: ["www.py4e.com"],
   iframeWhitelist: ["www.py4e.com"],
 
-  // Opt-out subtree
-  optOutAttr: "data-no-trans-sid",
-
-  // Idempotency across pre/post PHP9:
+  // Migration idempotency: if any already present, do not add again
   alreadyPresentParams: ["_LTI_TSUGI", "PHPSESSID", "SID"],
   alreadyPresentPostFields: ["_LTI_TSUGI", "PHPSESSID", "SID"],
 
@@ -99,33 +137,67 @@ window.TRANS_SID = {
     optOutFlag: "__transSidOptOut"
   },
 
-  debug: false
+  debug: true,
+  dryRun: true
 };
 ```
 
-**Notes**
+---
 
-* `pathPrefixes` should be very tight (example: `["/mod/tdiscus/"]`).
-  This prevents leaking `_LTI_TSUGI` to unrelated paths on the same domain.
-* Whitelists are **exact hostname matches**.
-* `alreadyPresentParams` makes the script **safe when the server already rewrote URLs**.
+## Opt-out for TRANS_SID
+
+Disable TRANS_SID behavior in a DOM subtree:
+
+```html
+<div data-no-trans-sid>...</div>
+```
+
+(You may customize the attribute name via `optOutAttr`.)
 
 ---
 
-### 2) CSRF (recommended)
+# Feature 2: CSRF (independent of TRANS_SID)
 
-CSRF requires a token exposed to JS via one of:
+## Purpose
 
-* `<meta name="csrf-token" content="...">`, or
-* `window.CSRF_TOKEN = "..."`
+CSRF injection works for both:
 
-Example:
+* cookie sessions (`PHPSESSID`)
+* cookieless sessions (tools)
+
+CSRF does not depend on TRANS_SID.
+
+## Token sources
+
+A token must be exposed to JavaScript via either:
+
+### Meta tag (preferred)
 
 ```html
 <meta name="csrf-token" content="...">
 ```
 
-Optional config:
+### Global variable
+
+```javascript
+window.CSRF_TOKEN = "...";
+```
+
+## Behavior (when enabled)
+
+CSRF can:
+
+1. inject a hidden field into all POST forms:
+
+* `<input type="hidden" name="csrf" value="...">`
+
+2. add a header to fetch() calls:
+
+* `X-CSRF: <token>`
+
+---
+
+## Example configuration
 
 ```javascript
 window.CSRF = {
@@ -135,113 +207,94 @@ window.CSRF = {
   fieldName: "csrf",
   headerName: "X-CSRF",
   optOutAttr: "data-no-csrf",
-  debug: false
+  debug: true,
+  dryRun: true
 };
 ```
 
-If no token is present, CSRF injection is skipped automatically.
-
 ---
 
-## Opt-out mechanism
+## Opt-out for CSRF
 
-Two independent opt-out attributes exist:
-
-* `data-no-trans-sid` prevents TRANS_SID rewriting inside a subtree
-* `data-no-csrf` prevents CSRF injection inside a subtree
-
-Examples:
+Disable CSRF injection in a subtree:
 
 ```html
-<div data-no-trans-sid>
-  <a href="/mod/tdiscus/logout">will NOT get _LTI_TSUGI</a>
-</div>
-
-<div data-no-csrf>
-  <form method="post" action="/dangerous">will NOT get CSRF hidden input</form>
-</div>
+<div data-no-csrf>...</div>
 ```
 
 ---
 
-## Idempotency guarantees
+# Fetch wrapper
 
-`tsugi-spa.js` is designed to avoid double-patching.
+`tsugi-spa.js` installs **one and only one** fetch() wrapper, and only when at least one feature is fully configured.
 
-### TRANS_SID URL rewriting
+The wrapper supports:
 
-If the URL already contains any param in `alreadyPresentParams`, no additional param is appended.
+* TRANS_SID header injection (tight scope)
+* CSRF header injection (global)
 
-### TRANS_SID POST injection
-
-If a POST form already contains a hidden field with any name in `alreadyPresentPostFields`, no additional field is injected.
-
-### Fetch headers
-
-If a request already has any header in `alreadyPresentHeaders`, the TRANS_SID header is not added.
-
-This is specifically to support a transition period where the server may still be doing server-side trans_sid behavior.
+In dry-run mode, it logs what it would add but does not actually add headers or query params.
 
 ---
 
-## Dynamic content support
+# Compatibility with server-side trans_sid
 
-The script uses `MutationObserver` and also “last moment” handlers:
+During migration, the server may already have rewritten URLs and/or injected fields.
 
-* click handler to rewrite `<a>` right before navigation
-* submit handler to ensure POST forms have required hidden fields
+TRANS_SID avoids double-patching via:
 
-This covers both server-rendered pages and pages that insert elements dynamically.
+* `alreadyPresentParams` (URLs)
+* `alreadyPresentPostFields` (forms)
+* `alreadyPresentHeaders` (fetch)
 
----
-
-## Server-side expectations
-
-### CSRF verification
-
-Server should accept CSRF tokens from:
-
-* POST field: `CSRF.fieldName` (default `csrf`)
-* header: `CSRF.headerName` (default `X-CSRF`)
-
-### Cookieless session identification (tools)
-
-Server should accept session ids from:
-
-* header: `TRANS_SID.fetch.headerName` (default `X-Trans-Sid`) — preferred
-* query parameter: `TRANS_SID.name`
+If any “already present” indicator exists, the script does nothing for that item.
 
 ---
 
-## Recommended security headers
+# Server-side expectations (recommended)
 
-If session identifiers ever appear in URLs, strongly consider:
+## Session identification (tools)
+
+Server should accept cookieless sessions via:
+
+1. `X-Trans-Sid` header
+2. `_LTI_TSUGI` query parameter (or whatever `TRANS_SID.name` is)
+
+## CSRF verification
+
+Server should accept CSRF tokens via:
+
+1. POST field (`CSRF.fieldName`)
+2. header (`CSRF.headerName`)
+
+---
+
+# Security recommendations
+
+If session identifiers ever appear in URLs:
 
 * `Referrer-Policy: strict-origin-when-cross-origin`
 * `Cache-Control: private, no-store`
 
 ---
 
-## Invariants (do not break)
+# Invariants (do not break)
 
-If this file is modified, preserve these invariants:
-
-1. TRANS_SID rewriting remains **tightly scoped** by `pathPrefixes`.
-2. Session tokens are never added to non-whitelisted hosts.
-3. The script remains safe to run with server-side trans_sid enabled (idempotent).
-4. POST URLs remain clean (POST uses hidden fields; URL rewriting is for navigation).
-5. Only **one** `fetch()` wrapper is installed.
+1. TRANS_SID must remain tightly scoped by `pathPrefixes`.
+2. Session identifiers must never be added to non-whitelisted hosts.
+3. Idempotency must remain intact for mixed pre/post PHP 9 deployments.
+4. POST URLs must remain clean (POST uses hidden inputs).
+5. Only one fetch() wrapper may be installed.
+6. The guard must keep the file inert unless configured.
 
 ---
 
-## Summary
+# Summary
 
-`tsugi-spa.js` provides a pragmatic, JS-first bridge across:
+`tsugi-spa.js` is a low-friction way to:
 
-* cookie vs cookieless session operation
-* pre–PHP 9 vs post–PHP 9 servers
-* classic server-rendered pages + dynamic DOM
-
-It deliberately favors predictability and “tight scoping” to avoid the historic problems associated with global trans_sid rewriting.
-
+* observe behavior in dry-run mode,
+* migrate away from server-side trans_sid safely,
+* add CSRF coverage without hand-editing many templates,
+* keep cookie and cookieless operation working in one codebase.
 
