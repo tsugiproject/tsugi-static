@@ -150,6 +150,27 @@
     const CS_HEADER = trim(CS.headerName) || "X-CSRF";
     const csHasOptOut = (el) => !!(el && el.closest && el.closest(`[${CS_OPT_OUT}]`));
 
+    const CS_FCFG = CS.fetch || {};
+    const CS_FETCH_OPT_OUT_FLAG = trim(CS_FCFG.optOutFlag) || "__csrfOptOut";
+
+    // CSRF fetch scope: reuse TRANS_SID scope when available, else same-origin + all paths
+    const CS_FETCH_HOST_WHITELIST = isArr(CS_FCFG.hostWhitelist)
+      ? CS_FCFG.hostWhitelist.map(str).filter(Boolean)
+      : (TS_ENABLED ? TS_HOST_WHITELIST : [location.host]);
+    const CS_FETCH_PATH_PREFIXES = isArr(CS_FCFG.pathPrefixes)
+      ? CS_FCFG.pathPrefixes.map(str).filter(Boolean)
+      : (TS_ENABLED && TS_PATH_PREFIXES.length ? TS_PATH_PREFIXES : ["/"]);
+    const CS_FETCH_EXCLUDE_PREFIXES = isArr(CS_FCFG.excludePathPrefixes)
+      ? CS_FCFG.excludePathPrefixes.map(str).filter(Boolean)
+      : (TS_ENABLED ? TS_FETCH_EXCLUDE_PREFIXES : []);
+
+    const csShouldConsiderUrlForFetch = (url) =>
+      !!url &&
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      CS_FETCH_HOST_WHITELIST.includes(url.host) &&
+      CS_FETCH_PATH_PREFIXES.some(p => url.pathname.startsWith(p)) &&
+      !CS_FETCH_EXCLUDE_PREFIXES.some(p => url.pathname.startsWith(p));
+
     // -------------------------------------------------------------------------
     // DOM rewriting: TRANS_SID
     // -------------------------------------------------------------------------
@@ -325,13 +346,12 @@
         const origFetch = window.fetch.bind(window);
 
         window.fetch = (input, init = {}) => {
-          // TRANS_SID per-call opt-out flag
-          let transSidOptOut = false;
-          if (TS_FETCH_ENABLED && init && init[TS_FETCH_OPT_OUT_FLAG]) {
-            transSidOptOut = true;
-            const { [TS_FETCH_OPT_OUT_FLAG]: _drop, ...rest } = init;
-            init = rest;
-          }
+          // Per-call opt-out flags (strip from init before passing to origFetch)
+          const i = init ?? {};
+          const transSidOptOut = !!(i[TS_FETCH_OPT_OUT_FLAG]);
+          const csrfOptOut = !!(i[CS_FETCH_OPT_OUT_FLAG]);
+          const { [TS_FETCH_OPT_OUT_FLAG]: _ts, [CS_FETCH_OPT_OUT_FLAG]: _cs, ...stripped } = i;
+          init = stripped;
 
           const url =
             (typeof input === "string") ? safeUrl(input) :
@@ -341,6 +361,8 @@
           // Merge headers: Request headers then init.headers override
           const headers = new Headers((input instanceof Request) ? input.headers : undefined);
           if (init.headers) new Headers(init.headers).forEach((v, k) => headers.set(k, v));
+
+          const method = (init.method || (input instanceof Request ? input.method : undefined) || "GET").toUpperCase();
 
           // TRANS_SID header injection (tight scope)
           if (TS_FETCH_ENABLED && !transSidOptOut && url) {
@@ -368,8 +390,9 @@
             }
           }
 
-          // CSRF header injection
-          if (CS_TOKEN_ENABLED) {
+          // CSRF header injection (only state-changing methods: POST, PUT, DELETE, PATCH; skip GET, HEAD, OPTIONS)
+          const csrfMethodOk = !["GET", "HEAD", "OPTIONS"].includes(method);
+          if (CS_TOKEN_ENABLED && !csrfOptOut && csrfMethodOk && url && csShouldConsiderUrlForFetch(url)) {
             if (!headers.has(CS_HEADER)) {
               if (CS_DRYRUN) csLog("DRYRUN fetch would add header", CS_HEADER);
               else headers.set(CS_HEADER, csrfToken);

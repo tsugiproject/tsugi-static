@@ -191,7 +191,7 @@ CSRF can:
 
 * `<input type="hidden" name="csrf" value="...">`
 
-2. add a header to fetch() calls:
+2. add a header to state-changing fetch() calls (POST, PUT, DELETE, PATCH — not GET, HEAD, OPTIONS; see Fetch wrapper):
 
 * `X-CSRF: <token>`
 
@@ -207,6 +207,13 @@ window.CSRF = {
   fieldName: "csrf",
   headerName: "X-CSRF",
   optOutAttr: "data-no-csrf",
+  fetch: {
+    optOutFlag: "__csrfOptOut",    // per-call: fetch(url, { __csrfOptOut: true })
+    // Scope (when only CSRF enabled; when both enabled, inherits from TRANS_SID):
+    // hostWhitelist: ["www.example.com"],
+    // pathPrefixes: ["/"],
+    // excludePathPrefixes: ["/static/", "/assets/"]
+  },
   debug: true,
   dryRun: true
 };
@@ -216,11 +223,27 @@ window.CSRF = {
 
 ## Opt-out for CSRF
 
-Disable CSRF injection in a subtree:
+### Forms (DOM subtree)
+
+Disable CSRF injection in a subtree via the `data-no-csrf` attribute:
 
 ```html
 <div data-no-csrf>...</div>
 ```
+
+(You may customize the attribute name via `optOutAttr`.)
+
+### Fetch (per-call)
+
+For `fetch()` there is no form in the picture, so use a per-call opt-out flag in the init object:
+
+```javascript
+fetch("https://external-api.example/data", { __csrfOptOut: true });
+```
+
+This skips adding the `X-CSRF` header for that request. Use when calling third-party APIs, CDNs, or other endpoints that do not expect or may reject the header.
+
+Configure the flag name via `CSRF.fetch.optOutFlag` (default: `__csrfOptOut`).
 
 ---
 
@@ -230,10 +253,25 @@ Disable CSRF injection in a subtree:
 
 The wrapper supports:
 
-* TRANS_SID header injection (tight scope)
-* CSRF header injection (global)
+* TRANS_SID header injection (tight scope, per-call opt-out via `__transSidOptOut`)
+* CSRF header injection (scoped — only for state-changing methods POST/PUT/DELETE/PATCH when URL passes allow logic; per-call opt-out via `__csrfOptOut`)
 
-In dry-run mode, it logs what it would add but does not actually add headers or query params.
+## Fetch scope (both features)
+
+Both TRANS_SID and CSRF only add headers when the fetch URL passes allow processing:
+
+* **Host**: must be in `hostWhitelist` (TRANS_SID provides this when both enabled; CSRF-only defaults to same origin)
+* **Path**: must start with one of `pathPrefixes`, and must *not* start with any of `excludePathPrefixes`
+
+When both features are enabled, CSRF fetch reuses TRANS_SID’s scope (hostWhitelist, pathPrefixes, excludePathPrefixes). When only CSRF is enabled, defaults are: same-origin host, all paths (`["/"]`), no exclusions. Override via `CSRF.fetch.hostWhitelist`, `pathPrefixes`, `excludePathPrefixes`.
+
+## Dry-run behavior for fetch
+
+In dry-run mode, the wrapper logs what it *would* add but **does not** mutate headers or query params. The actual `fetch()` still executes, so the request goes through **without** the TRANS_SID or CSRF headers. Authenticated endpoints that require these headers may return 401/403 during dry-run. This is intentional: dry-run is for observing what would change, not for simulating a fully patched request.
+
+## When to use CSRF fetch opt-out
+
+CSRF is added only to fetches whose URLs pass the scope check (requests to our server). External URLs (different host) are excluded by default and do not receive the header. Use `__csrfOptOut: true` only when calling a same-host path that is in scope but should not get the header (e.g. a legacy endpoint that does not expect it).
 
 ---
 
