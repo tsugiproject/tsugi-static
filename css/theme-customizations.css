@@ -3,7 +3,7 @@ Customizations specifically related to theming
 This is imported at the top of tsugi2.css
 */
 body a {
-    color: var(--text-light);
+    color: var(--primary, #337ab7);
 }
 .navbar a, .panel-heading a, a.btn {
     text-decoration: none;
@@ -17,11 +17,11 @@ body a {
 }
 a.btn-link, button.btn-link {
     text-decoration: underline;
-    color: var(--text);
+    color: var(--primary, #337ab7);
 }
 a.btn-link:hover, button.btn-link:hover, button.btn-link:focus {
     text-decoration: underline;
-    color: var(--text);
+    color: var(--primary-darker, #23527c);
 }
 .btn-outline-background {
     background-color: var(--background-color);
@@ -34,7 +34,7 @@ a.btn-link:hover, button.btn-link:hover, button.btn-link:focus {
     border: 1px solid var(--text);
 }
 body a:hover, body a:focus {
-    color: var(--text);
+    color: var(--primary-darker, #23527c);
 }
 .panel-heading a:hover {
     color: var(--secondary-menu);
