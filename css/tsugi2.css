@@ -905,3 +905,15 @@ h1.splash-header {
     left: 0;
     top: 0;
 }
+
+/* Vertically align mixed right-nav items (links, navbar-text widgets, dropdowns) */
+@media (min-width: 768px) {
+  .navbar-inverse .navbar-nav.navbar-right {
+    display: flex;
+    align-items: center;
+    float: right;
+  }
+  .navbar-inverse .navbar-nav.navbar-right > li {
+    float: none;
+  }
+}
