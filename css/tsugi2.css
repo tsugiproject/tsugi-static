@@ -906,8 +906,23 @@ h1.splash-header {
     top: 0;
 }
 
-/* Vertically align mixed right-nav items (links, navbar-text widgets, dropdowns) */
+/* Desktop: keep Bootstrap float layout; only tweak vertical rhythm + right cluster */
 @media (min-width: 768px) {
+  /* Drop extra li margins so main links sit on the same row as the brand (tsugi2 .nav > li margins) */
+  .navbar-inverse .navbar-nav.navbar-main > li {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  /* Center link text in the bar; extra padding-bottom/margin-bottom on .nav > li > a was pulling the label up */
+  .navbar-inverse .navbar-nav.navbar-main > li > a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 50px;
+    padding-top: 10px;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    box-sizing: border-box;
+  }
   .navbar-inverse .navbar-nav.navbar-right {
     display: flex;
     align-items: center;
@@ -915,5 +930,18 @@ h1.splash-header {
   }
   .navbar-inverse .navbar-nav.navbar-right > li {
     float: none;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  /* Tighter horizontal rhythm than default .navbar-nav > li > a (15px) */
+  .navbar-inverse .navbar-nav.navbar-right > li > a {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  .navbar-inverse .navbar-nav.navbar-right > li.navbar-text {
+    padding-left: 4px;
+    padding-right: 4px;
+    margin-left: 0;
+    margin-right: 0;
   }
 }
