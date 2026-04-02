@@ -1014,3 +1014,70 @@ h1.splash-header {
 .tsugi-cal-events a.tsugi-assignments-due-neutral {
     color: var(--tsugi-lesson-due-neutral-fg);
 }
+
+/* --------------------------------------------------------------------------
+ * Main site nav (#tsugi_main_nav_bar): collapsed (xs) behavior
+ * Flatten profile dropdown; align link typography with stacked .nav items.
+ * -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+    /* BS .navbar-nav { margin: 7.5px -15px } pulls items outward; one consistent inset */
+    #tsugi_main_nav_bar .navbar-collapse > .navbar-nav {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    #tsugi_main_nav_bar .navbar-nav > li.dropdown > a.dropdown-toggle {
+        display: none;
+    }
+    #tsugi_main_nav_bar .navbar-nav > li.dropdown > ul.dropdown-menu {
+        display: block !important;
+        position: static;
+        float: none;
+        width: auto;
+        margin-top: 0;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 0 !important;
+        background-color: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        font-size: inherit;
+        line-height: inherit;
+    }
+    #tsugi_main_nav_bar .navbar-nav > li.dropdown > ul.dropdown-menu > li {
+        margin: 0;
+        float: none;
+    }
+    /* Match .nav > li > a (10px 15px); override BS dropdown-menu / open submenu padding */
+    #tsugi_main_nav_bar .navbar-nav > li:not(.dropdown) > a,
+    #tsugi_main_nav_bar .navbar-nav > li.dropdown > ul.dropdown-menu > li > a {
+        padding: 10px 15px !important;
+        line-height: 20px;
+        font-size: inherit;
+        font-weight: normal;
+        color: #fff;
+        text-indent: 0;
+        white-space: normal;
+    }
+    #tsugi_main_nav_bar .navbar-nav > li.navbar-text {
+        float: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    #tsugi_main_nav_bar .navbar-nav > li:not(.dropdown) > a:hover,
+    #tsugi_main_nav_bar .navbar-nav > li:not(.dropdown) > a:focus,
+    #tsugi_main_nav_bar .navbar-nav > li.dropdown > ul.dropdown-menu > li > a:hover,
+    #tsugi_main_nav_bar .navbar-nav > li.dropdown > ul.dropdown-menu > li > a:focus {
+        color: #fff;
+        background-color: transparent;
+        text-decoration: none;
+    }
+    #tsugi_main_nav_bar .navbar-nav > li.dropdown > ul.dropdown-menu > .active > a,
+    #tsugi_main_nav_bar .navbar-nav > li.dropdown > ul.dropdown-menu > .active > a:hover,
+    #tsugi_main_nav_bar .navbar-nav > li.dropdown > ul.dropdown-menu > .active > a:focus {
+        color: #fff;
+        background-color: #080808;
+    }
+}
