@@ -754,6 +754,142 @@ h1.splash-header {
 }
 
 /* --------------------------------------------------------------------------
+   Lessons UI — layout, lists, overlays (Tsugi\UI\Lessons; formerly inline in header())
+   -------------------------------------------------------------------------- */
+
+/* All-modules cards: Lessons::renderAll() wraps modules in #box > article.card */
+#box article.card {
+  display: inline-block;
+  padding: 0.5em;
+  margin: 12px;
+  border: 1px solid #000;
+  height: 12em;
+  overflow-y: hidden;
+}
+#box article.card > div {
+  height: 11em;
+  overflow-y: hidden;
+  text-overflow: ellipsis;
+}
+#box article.card .tsugi-card-description {
+  margin: 0.2em 0 0 0;
+  line-height: 2;
+}
+
+/* Full-screen loader (e.g. waterfall / transitions on lessons index) */
+#loader {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  margin: 0;
+  z-index: 100;
+}
+
+/* Indent content lists that follow h2 headers */
+h2 ~ ul.tsugi-lessons-content-list,
+h2 + ul.tsugi-lessons-content-list {
+  margin-left: 1.5em;
+  padding-left: 0.5em;
+}
+div:has(> h2) ul.tsugi-lessons-content-list,
+li:has(> h2) ul.tsugi-lessons-content-list {
+  margin-left: 1.5em;
+  padding-left: 0.5em;
+}
+
+.tsugi-lessons-module-title-cardmatch {
+  overflow: auto;
+}
+
+ul.tsugi-lessons-content-list {
+  list-style: none;
+  padding-left: 0;
+}
+ul.tsugi-lessons-content-list li {
+  list-style: none;
+  padding-left: 0;
+}
+ul.tsugi-lessons-content-list li i.fa {
+  color: #666;
+  width: 1.2em;
+  text-align: center;
+}
+
+/* Close button for video/audio overlay dialogs */
+.tsugi-overlay-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.tsugi-overlay-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+.w3schools-overlay-content {
+  position: relative;
+}
+
+/* Button styled as link for video/lecture play triggers */
+.tsugi-video-play-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Colored item type icons in lesson content */
+.tsugi-item-type-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  font-size: 14px;
+  margin-right: 8px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Prev / All / Next pager on single-module view */
+ul.pager.tsugi-lessons-pager {
+  display: flex;
+  justify-content: space-between;
+  min-width: 200px;
+}
+ul.pager.tsugi-lessons-pager > li {
+  flex: 1;
+}
+ul.pager.tsugi-lessons-pager > li:first-child {
+  text-align: left;
+}
+ul.pager.tsugi-lessons-pager > li:nth-child(2) {
+  text-align: center;
+}
+ul.pager.tsugi-lessons-pager > li:last-child {
+  text-align: right;
+}
+
+/* --------------------------------------------------------------------------
    Lessons UI — assignment due badges + module progress (Tsugi\UI\Lessons)
    Covers: assignments tool list, all-modules cards, single-module title, LTI rows.
    -------------------------------------------------------------------------- */
@@ -797,6 +933,7 @@ h1.splash-header {
   box-sizing: border-box;
 }
 
+/* Module percent-complete badges (Tsugi\UI\Lessons::echoModuleAggregateProgressBadge); keep styling here, not inline in PHP. */
 .tsugi-lessons-module-card-link .progress-badge,
 .tsugi-lessons-module-title-cardmatch .progress-badge {
   display: inline-block;
