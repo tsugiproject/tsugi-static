@@ -915,6 +915,10 @@ ul.pager.tsugi-lessons-pager > li:last-child {
   --tsugi-lesson-due-neutral-bg: #e9ecef;
   --tsugi-lesson-due-neutral-fg: #495057;
   --tsugi-lesson-due-neutral-border: #dee2e6;
+  /* Upcoming (due in more than 7 days): subtle grey, not the same green as completed */
+  --tsugi-lesson-due-future-bg: #e9ecef;
+  --tsugi-lesson-due-future-fg: #212529;
+  --tsugi-lesson-due-future-border: #dee2e6;
 }
 
 .tsugi-assignments-item .tsugi-assignments-due-badge,
@@ -988,16 +992,21 @@ ul.pager.tsugi-lessons-pager > li:last-child {
 }
 
 .tsugi-assignments-item .tsugi-assignments-due-completed,
-.tsugi-assignments-item .tsugi-assignments-due-future,
 .tsugi-lessons-module-lti .tsugi-assignments-due-completed,
-.tsugi-lessons-module-lti .tsugi-assignments-due-future,
 .tsugi-lessons-module-card-link .tsugi-assignments-due-completed,
-.tsugi-lessons-module-card-link .tsugi-assignments-due-future,
-.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-completed,
-.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-future {
+.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-completed {
   background: var(--tsugi-lesson-due-ok-bg);
   color: var(--tsugi-lesson-due-ok-fg);
   border-color: var(--tsugi-lesson-due-ok-border);
+}
+
+.tsugi-assignments-item .tsugi-assignments-due-future,
+.tsugi-lessons-module-lti .tsugi-assignments-due-future,
+.tsugi-lessons-module-card-link .tsugi-assignments-due-future,
+.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-future {
+  background: var(--tsugi-lesson-due-future-bg);
+  color: var(--tsugi-lesson-due-future-fg);
+  border-color: var(--tsugi-lesson-due-future-border);
 }
 
 .tsugi-assignments-item .tsugi-assignments-due-past,
@@ -1025,6 +1034,15 @@ ul.pager.tsugi-lessons-pager > li:last-child {
   background: var(--tsugi-lesson-due-neutral-bg);
   color: var(--tsugi-lesson-due-neutral-fg);
   border-color: var(--tsugi-lesson-due-neutral-border);
+}
+
+/* Assignments list: title links to module + in-page #tsugi-rl-… anchor */
+.tsugi-assignments-title-link {
+  font-weight: 600;
+}
+
+li.tsugi-lessons-module-lti[id^="tsugi-rl-"] {
+  scroll-margin-top: 1rem;
 }
 
 /* Skip link for accessibility */
@@ -1138,9 +1156,11 @@ ul.pager.tsugi-lessons-pager > li:last-child {
 .tsugi-cal-events a.tsugi-cal-event-link {
     font-weight: 600;
 }
-.tsugi-cal-events a.tsugi-assignments-due-completed,
-.tsugi-cal-events a.tsugi-assignments-due-future {
+.tsugi-cal-events a.tsugi-assignments-due-completed {
     color: var(--tsugi-lesson-due-ok-fg);
+}
+.tsugi-cal-events a.tsugi-assignments-due-future {
+    color: var(--tsugi-lesson-due-future-fg);
 }
 .tsugi-cal-events a.tsugi-assignments-due-past {
     color: var(--tsugi-lesson-due-late-fg);
