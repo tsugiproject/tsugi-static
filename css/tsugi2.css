@@ -1052,10 +1052,19 @@ li.tsugi-lessons-module-lti[id^="tsugi-rl-"] {
 
 .tsugi-lessons-module-discussion .tsugi-discussion-badge {
   margin-left: 0;
+  display: inline-block !important;
+  border-radius: 0.35em !important;
+  padding: 0.16em 0.45em !important;
+  font-size: 0.82rem !important;
+  line-height: 1.15 !important;
+  font-weight: bold !important;
+  min-width: 1.2em !important;
+  text-align: center !important;
+  vertical-align: middle !important;
 }
 
 .tsugi-lessons-module-discussion .tsugi-discussion-badge-personal {
-  background: #9f1239 !important;
+  background: #d9534f !important;
   color: #fff !important;
 }
 
