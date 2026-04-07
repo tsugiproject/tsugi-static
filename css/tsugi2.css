@@ -1045,6 +1045,30 @@ li.tsugi-lessons-module-lti[id^="tsugi-rl-"] {
   scroll-margin-top: 1rem;
 }
 
+/* Discussions rollup badges (Tsugi\UI\Lessons::renderDiscussions) */
+.tsugi-lessons-module-discussion .tsugi-discussion-rollup-badges {
+  margin-left: 6px;
+}
+
+.tsugi-lessons-module-discussion .tsugi-discussion-badge {
+  margin-left: 0;
+}
+
+.tsugi-lessons-module-discussion .tsugi-discussion-badge-personal {
+  background: #9f1239 !important;
+  color: #fff !important;
+}
+
+.tsugi-lessons-module-discussion .tsugi-discussion-badge-participating {
+  background: #fbbf24 !important;
+  color: #111 !important;
+}
+
+.tsugi-lessons-module-discussion .tsugi-discussion-badge-global {
+  background: #d1d5db !important;
+  color: #111 !important;
+}
+
 /* Skip link for accessibility */
 .skip-link {
     position: absolute;
