@@ -1061,21 +1061,25 @@ li.tsugi-lessons-module-lti[id^="tsugi-rl-"] {
   min-width: 1.2em !important;
   text-align: center !important;
   vertical-align: middle !important;
+  border: 1px solid transparent !important;
 }
 
 .tsugi-lessons-module-discussion .tsugi-discussion-badge-personal {
   background: #d9534f !important;
   color: #fff !important;
+  border-color: #c94440 !important;
 }
 
 .tsugi-lessons-module-discussion .tsugi-discussion-badge-participating {
   background: #fbbf24 !important;
   color: #111 !important;
+  border-color: #f59e0b !important;
 }
 
 .tsugi-lessons-module-discussion .tsugi-discussion-badge-global {
-  background: #d1d5db !important;
-  color: #111 !important;
+  background: var(--tsugi-lesson-due-ok-bg) !important;
+  color: var(--tsugi-lesson-due-ok-fg) !important;
+  border-color: var(--tsugi-lesson-due-ok-border) !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -1152,21 +1156,25 @@ li.tsugi-lessons-module-lti[id^="tsugi-rl-"] {
   text-align: center;
   border-radius: 0.35em;
   color: #111;
+  border: 1px solid transparent;
 }
 
 .tdiscus-thread-item-title-badge-personal {
   background: #d9534f;
   color: #fff;
+  border-color: #c94440;
 }
 
 .tdiscus-thread-item-title-badge-participating {
   background: #fbbf24;
   color: #111;
+  border-color: #f59e0b;
 }
 
 .tdiscus-thread-item-title-badge-global {
-  background: #d1d5db;
-  color: #111;
+  background: var(--tsugi-lesson-due-ok-bg);
+  color: var(--tsugi-lesson-due-ok-fg);
+  border-color: var(--tsugi-lesson-due-ok-border);
 }
 
 .tdiscus-staff-created {
