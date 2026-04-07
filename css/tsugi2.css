@@ -1275,6 +1275,27 @@ li.tsugi-lessons-module-lti[id^="tsugi-rl-"] {
     padding-right: 4px;
     margin-left: 0;
     margin-right: 0;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    min-height: 50px;
+  }
+  .navbar-inverse .navbar-nav.navbar-right > li.tsugi-wc-nav-item {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 50px;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    line-height: 1;
+    vertical-align: middle;
+  }
+  .navbar-inverse .navbar-nav.navbar-right > li.tsugi-wc-nav-item > tsugi-notifications,
+  .navbar-inverse .navbar-nav.navbar-right > li.tsugi-wc-nav-item > tsugi-calendar-due,
+  .navbar-inverse .navbar-nav.navbar-right > li.tsugi-wc-nav-item > tsugi-discussions {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    transform: translateY(2px);
   }
 }
 
