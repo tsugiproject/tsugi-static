@@ -842,6 +842,66 @@ ul.tsugi-lessons-content-list li i.fa {
   position: relative;
 }
 
+/* Kaltura embed modal (Canvas-style title bar + iframe) */
+.tsugi-kaltura-overlay-content {
+  background-color: #fff;
+  /* 90% wide, but shrink if a 16:9 player would not fit vertically */
+  width: min(90%, calc((100vh - 7rem) * 16 / 9));
+  max-width: 90%;
+  text-align: left;
+}
+.tsugi-kaltura-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 0.5em 2.75em 0.5em 0.75em;
+  border-bottom: 1px solid #ddd;
+  background: #f5f5f5;
+  position: relative;
+}
+.tsugi-kaltura-title-link {
+  flex: 1 1 auto;
+  font-size: 18px;
+  text-align: center;
+  padding: 0.2em;
+  color: inherit;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tsugi-kaltura-title-link:hover,
+.tsugi-kaltura-title-link:focus {
+  text-decoration: underline;
+}
+.tsugi-kaltura-open-new {
+  flex: 0 0 auto;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+.tsugi-kaltura-close {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  color: #333;
+}
+.tsugi-kaltura-close:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+.tsugi-kaltura-iframe {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  max-height: calc(100vh - 7rem);
+  border: 0;
+  float: none;
+  background: #000;
+}
+
 /* Button styled as link for video/lecture play triggers */
 .tsugi-video-play-btn {
   background: none;
