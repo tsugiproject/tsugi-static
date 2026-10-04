@@ -130,6 +130,22 @@ function lti_frameResize(new_height, element_id) {
     );
 }
 
+// Hide the overlay that holds an iframe.lti_frameClose. The tool posts
+// {subject:"lti.close"} and only the frame that sent it is closed.
+function lti_frameClose(frame) {
+    var overlay = frame.closest ? frame.closest('.w3schools-overlay') : null;
+    if ( overlay ) {
+        jQuery(overlay).find('iframe').each(function() { this.src = ''; });
+        overlay.style.display = 'none';
+        return;
+    }
+    frame.src = '';
+    var $dialog = jQuery(frame).closest('.ui-dialog-content');
+    if ( $dialog.length && typeof $dialog.dialog === 'function' ) {
+        try { $dialog.dialog('close'); } catch (err) {}
+    }
+}
+
 function lti_frameResizeNow(new_height, element_id) {
     parms = {
       subject: "lti.frameResize",
@@ -174,6 +190,158 @@ function lti_scrollParentToTop() {
     }), "*");
 }
 
+// Parent-window messages this page actually handles. lti.* is current.
+// org.imsglobal.lti.* is the legacy subject name.
+var LTI_SUPPORTED_MESSAGES = [
+    { subject: "lti.capabilities" },
+    { subject: "lti.put_data", frame: "_parent" },
+    { subject: "lti.get_data", frame: "_parent" },
+    { subject: "lti.scrollToTop" },
+    { subject: "lti.close" },
+    { subject: "lti.frameResize" },
+    { subject: "org.imsglobal.lti.capabilities" },
+    { subject: "org.imsglobal.lti.put_data", frame: "_parent" },
+    { subject: "org.imsglobal.lti.get_data", frame: "_parent" },
+    { subject: "org.imsglobal.lti.close" },
+    { subject: "org.imsglobal.lti.frameResize" }
+];
+var LTI_STORED_DATA = {};
+var LTI_STORAGE_QUOTA = 300000;
+var LTI_APPROVED_FRAMES = [];
+
+function lti_subjectPrefix(subject) {
+    if ( subject && subject.indexOf('org.imsglobal.lti.') === 0 ) return 'org.imsglobal.lti.';
+    return 'lti.';
+}
+
+function lti_reply(e, data) {
+    if ( !e.source || typeof e.source.postMessage !== 'function' ) return;
+    if ( !e.origin || e.origin === 'null' ) return;
+    try {
+        e.source.postMessage(data, e.origin);
+    } catch (err) {
+        console.log('lti reply failed', err);
+    }
+}
+
+function lti_frameForSource(source) {
+    if ( !source ) return null;
+    var frames = document.getElementsByTagName('iframe');
+    for ( var i = 0; i < frames.length; i++ ) {
+        if ( frames[i].contentWindow === source ) return frames[i];
+    }
+    return null;
+}
+
+function lti_rememberFrame(frame) {
+    if ( !frame ) return;
+    for ( var i = 0; i < LTI_APPROVED_FRAMES.length; i++ ) {
+        if ( LTI_APPROVED_FRAMES[i] === frame ) return;
+    }
+    LTI_APPROVED_FRAMES.push(frame);
+}
+
+function lti_sourceApproved(source) {
+    var frame = lti_frameForSource(source);
+    if ( !frame ) return false;
+    for ( var i = 0; i < LTI_APPROVED_FRAMES.length; i++ ) {
+        if ( LTI_APPROVED_FRAMES[i] === frame ) return true;
+    }
+    return false;
+}
+
+function lti_scrollFrameIntoView(frame) {
+    if ( !frame ) return;
+    if ( frame.parentElement ) frame.parentElement.scrollTop = 0;
+    if ( frame.scrollIntoView ) frame.scrollIntoView({ block: "start", inline: "nearest" });
+}
+
+function lti_frameHasClass(frame, className) {
+    return !!(frame && frame.classList && frame.classList.contains(className));
+}
+
+function lti_capabilities(e, message) {
+    var frame = lti_frameForSource(e.source);
+    var approved = lti_sourceApproved(e.source);
+    var canResize = lti_frameHasClass(frame, 'lti_frameResize');
+    var canClose = lti_frameHasClass(frame, 'lti_frameClose');
+    var messages = [];
+    for ( var i = 0; i < LTI_SUPPORTED_MESSAGES.length; i++ ) {
+        var subject = LTI_SUPPORTED_MESSAGES[i].subject;
+        if ( !approved && (subject.indexOf('put_data') >= 0 || subject.indexOf('get_data') >= 0) ) continue;
+        if ( !canResize && subject.indexOf('frameResize') >= 0 ) continue;
+        if ( !canClose && subject.indexOf('close') >= 0 ) continue;
+        messages.push(LTI_SUPPORTED_MESSAGES[i]);
+    }
+    lti_reply(e, {
+        subject: lti_subjectPrefix(message.subject) + 'capabilities.response',
+        message_id: message.message_id,
+        supported_messages: messages
+    });
+}
+
+function lti_putData(e, message) {
+    var prefix = lti_subjectPrefix(message.subject);
+    var response = prefix + 'put_data.response';
+    if ( typeof message.key == 'undefined' || typeof message.value == 'undefined' ) {
+        lti_reply(e, {
+            subject: response,
+            message_id: message.message_id,
+            error: { code: "key and value are required" }
+        });
+        return;
+    }
+    if ( !LTI_STORED_DATA[e.origin] ) LTI_STORED_DATA[e.origin] = {};
+    var storage = JSON.stringify(LTI_STORED_DATA).length
+        + JSON.stringify(message.key).length
+        + JSON.stringify(message.value).length;
+    if ( storage > LTI_STORAGE_QUOTA ) {
+        lti_reply(e, {
+            subject: response,
+            message_id: message.message_id,
+            key: message.key,
+            error: { code: "storage_exhaustion", message: storage + " bytes" }
+        });
+        return;
+    }
+    LTI_STORED_DATA[e.origin][message.key] = message.value;
+    lti_reply(e, {
+        subject: response,
+        message_id: message.message_id,
+        key: message.key,
+        value: message.value
+    });
+}
+
+function lti_getData(e, message) {
+    var prefix = lti_subjectPrefix(message.subject);
+    var response = prefix + 'get_data.response';
+    if ( typeof message.key == 'undefined' ) {
+        lti_reply(e, {
+            subject: response,
+            message_id: message.message_id,
+            error: { code: "key is required" }
+        });
+        return;
+    }
+    var bucket = LTI_STORED_DATA[e.origin];
+    if ( bucket && Object.prototype.hasOwnProperty.call(bucket, message.key) ) {
+        lti_reply(e, {
+            subject: response,
+            message_id: message.message_id,
+            key: message.key,
+            value: bucket[message.key]
+        });
+        return;
+    }
+    lti_reply(e, {
+        subject: response,
+        message_id: message.message_id,
+        key: message.key,
+        error: 'Could not find key'
+    });
+}
+
 // Straight Outta Github (with adaptations)
 // https://github.com/lumenlearning/candela/blob/master/wp-content/plugins/candela-utility/themes/bombadil/js/iframe_resizer.js
 /**
@@ -199,6 +367,7 @@ window.addEventListener('message', function (e) {
 
         switch (message.subject) {
             case 'lti.frameResize':
+            case 'org.imsglobal.lti.frameResize':
                 var height = message.height;
                 if (height >= 5000) height = 5000;
                 if (height <= 0) height = 1;
@@ -212,6 +381,40 @@ window.addEventListener('message', function (e) {
                         console.log("window.location.href set height="+height);
                     });
                 }
+                break;
+            case 'lti.close':
+            case 'org.imsglobal.lti.close':
+                var $closeFrames = message.element_id ? jQuery('#' + message.element_id) : jQuery('iframe.lti_frameClose');
+                $closeFrames.each(function() {
+                    if ( ! this.contentWindow || this.contentWindow !== e.source ) return;
+                    lti_frameClose(this);
+                });
+                break;
+            case 'lti.scrollToTop':
+                var scrollFrame = lti_frameForSource(e.source);
+                if ( !scrollFrame && message.element_id ) scrollFrame = document.getElementById(message.element_id);
+                lti_scrollFrameIntoView(scrollFrame);
+                break;
+            case 'lti.capabilities':
+            case 'org.imsglobal.lti.capabilities':
+                lti_capabilities(e, message);
+                break;
+            case 'org.sakailms.lti.prelaunch':
+                if ( e.origin !== window.location.origin ) break;
+                var preFrame = lti_frameForSource(e.source);
+                if ( !preFrame ) break;
+                lti_rememberFrame(preFrame);
+                lti_reply(e, { subject: 'org.tsugi.lti.prelaunch.response' });
+                break;
+            case 'lti.put_data':
+            case 'org.imsglobal.lti.put_data':
+                if ( ! lti_sourceApproved(e.source) ) break;
+                lti_putData(e, message);
+                break;
+            case 'lti.get_data':
+            case 'org.imsglobal.lti.get_data':
+                if ( ! lti_sourceApproved(e.source) ) break;
+                lti_getData(e, message);
                 break;
         }
     } catch (err) {
