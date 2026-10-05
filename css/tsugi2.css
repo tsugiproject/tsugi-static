@@ -1504,3 +1504,25 @@ li.tsugi-lessons-module-lti[id^="tsugi-rl-"] {
         background-color: #080808;
     }
 }
+
+/* Tab bars. Bootstrap's 1px #ddd rule is thin and pale. Only the selected tab covers the line. */
+.nav-tabs {
+    border-bottom: 2px solid #666;
+}
+.nav-tabs > li {
+    margin-bottom: 0;
+}
+.nav-tabs > li.active {
+    margin-bottom: -2px;
+}
+.nav-tabs > li > a:hover {
+    border-bottom-color: transparent;
+}
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+    border-width: 2px;
+    border-color: #666 #666 transparent;
+    background-color: #fff;
+    background-clip: border-box;
+}
