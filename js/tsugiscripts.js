@@ -1104,7 +1104,15 @@ function tsugiCheckFileMaxSize () {
 
     function tsugiStepLoad() {
       var raw = tsugiStepReadKey(pageKey);
-      if (!raw) raw = tsugiStepReadKey('dj4e-steps:' + location.pathname);
+      if (!raw) {
+        var older = ['tsugi-steps:' + location.pathname, 'dj4e-steps:' + location.pathname];
+        for (var k = 0; k < older.length; k++) {
+          raw = tsugiStepReadKey(older[k]);
+          if (!raw) continue;
+          try { localStorage.setItem(pageKey, raw); } catch (e) {}
+          break;
+        }
+      }
       if (!raw) return { v: 1, steps: {} };
       try {
         var data = JSON.parse(raw);
@@ -1144,7 +1152,7 @@ function tsugiCheckFileMaxSize () {
       var info = { box: box, path: path, text: text };
       infos.push(info);
       (pageByText[text] = pageByText[text] || []).push(info);
-      box.setAttribute('aria-label', text ? ('Mark done: ' + text.slice(0, 120)) : 'Mark this step done');
+      box.setAttribute('aria-label', text ? ('Mark done: ' + text.slice(0, 120)) : 'Mark this done');
     }
 
     var migrated = false;
@@ -1190,17 +1198,71 @@ function tsugiCheckFileMaxSize () {
       var total = boxes.length;
       meter.max = total;
       meter.value = done;
+      var noun = total === 1 ? 'progress box' : 'progress boxes';
       if (done === total) {
-        label.textContent = 'All ' + total + (total === 1 ? ' step marked' : ' steps marked');
+        label.textContent = 'All ' + total + ' ' + noun + ' marked';
       } else {
-        label.textContent = done + ' of ' + total + (total === 1 ? ' step marked' : ' steps marked');
+        label.textContent = done + ' of ' + total + ' ' + noun + ' marked';
       }
       nextBtn.disabled = done === total;
       clearBtn.disabled = done === 0;
     }
 
+    function tsugiStepMarkLaunched(info) {
+      if (!info || info.box.checked) return;
+      info.box.checked = true;
+      info.box.dispatchEvent(new Event('change'));
+    }
+
+    function tsugiStepLaunchClick(event, host) {
+      var path = event.composedPath ? event.composedPath() : [];
+      if (!path.length && event.target) path = [event.target];
+      var link = null;
+      var button = null;
+      var inside = false;
+      for (var i = 0; i < path.length; i++) {
+        var node = path[i];
+        if (!node || node.nodeType !== 1) continue;
+        if (node.classList && node.classList.contains('tsugi-step-box')) return false;
+        if (!link && node.tagName === 'A') link = node;
+        if (!button && node.tagName === 'BUTTON') button = node;
+        if (node === host) {
+          inside = true;
+          break;
+        }
+      }
+      if (!inside) return false;
+      // File-based videos keep the play control in a shadow root. Manifest
+      // videos are a light-DOM modal button. Either one is a launch.
+      if (link) return true;
+      if (!button) return false;
+      if ((button.getAttribute('onclick') || '').indexOf('tsugiOpenLinkModal') !== -1) return true;
+      return button.classList.contains('play-btn') || button.classList.contains('tsugi-video-play-btn');
+    }
+
+    function tsugiStepInfoForHost(host) {
+      if (!host) return null;
+      for (var n = 0; n < infos.length; n++) {
+        if (tsugiStepHost(infos[n].box) === host) return infos[n];
+      }
+      return null;
+    }
+
     infos.forEach(function (info) {
       tsugiStepPaint(info.box);
+      info.box.addEventListener('click', function (event) {
+        event.stopPropagation();
+      });
+      info.box.addEventListener('mousedown', function (event) {
+        event.stopPropagation();
+      });
+      var host = tsugiStepHost(info.box);
+      if (host) {
+        host.addEventListener('click', function (event) {
+          if (!tsugiStepLaunchClick(event, host)) return;
+          tsugiStepMarkLaunched(info);
+        });
+      }
       info.box.addEventListener('change', function () {
         var fresh = tsugiStepLoad();
         fresh.steps[info.path] = { done: info.box.checked, text: info.text };
@@ -1216,12 +1278,12 @@ function tsugiCheckFileMaxSize () {
     var bar = document.createElement('div');
     bar.id = 'tsugi-step-progress';
     bar.setAttribute('role', 'region');
-    bar.setAttribute('aria-label', 'Step progress');
+    bar.setAttribute('aria-label', 'Progress');
     bar.innerHTML =
       '<progress id="tsugi-step-progress-bar" value="0" max="1"></progress>' +
       '<span id="tsugi-step-progress-label" aria-live="polite"></span>' +
       '<span class="tsugi-step-progress-note">Saved in this browser</span>' +
-      '<button type="button" id="tsugi-step-next">Next open step</button>' +
+      '<button type="button" id="tsugi-step-next">Next open box</button>' +
       '<button type="button" id="tsugi-step-clear">Clear checks</button>';
     var anchor = document.getElementById('tsugi-step-root');
     if (anchor && anchor.parentNode) {
@@ -1245,7 +1307,7 @@ function tsugiCheckFileMaxSize () {
     });
 
     clearBtn.addEventListener('click', function () {
-      if (!window.confirm('Clear all step checks on this page? This only affects this browser.')) return;
+      if (!window.confirm('Clear all progress boxes on this page? This only affects this browser.')) return;
       for (var i = 0; i < boxes.length; i++) {
         boxes[i].checked = false;
         tsugiStepPaint(boxes[i]);
@@ -1255,6 +1317,15 @@ function tsugiCheckFileMaxSize () {
       stored = data.steps;
       tsugiStepMarkCurrent();
       tsugiStepUpdateProgress();
+    });
+
+    window.addEventListener('blur', function () {
+      window.setTimeout(function () {
+        var el = document.activeElement;
+        if (!el || el.tagName !== 'IFRAME') return;
+        if (!el.classList || !el.classList.contains('tsugi-inline-embed')) return;
+        tsugiStepMarkLaunched(tsugiStepInfoForHost(el.closest('.tsugi-step')));
+      }, 0);
     });
 
     tsugiStepMarkCurrent();

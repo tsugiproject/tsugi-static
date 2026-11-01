@@ -1569,7 +1569,7 @@ ul > li.tsugi-step {
   gap: 0.45rem 0.75rem;
   clear: both;
   position: sticky;
-  top: 0;
+  top: 52px;
   z-index: 30;
   margin: 0.2rem 0 1rem;
   padding: 0.4rem 0.65rem;
@@ -1612,7 +1612,8 @@ ul > li.tsugi-step {
 }
 
 @media print {
-  #tsugi-step-progress {
+  #tsugi-step-progress,
+  input.tsugi-step-box {
     display: none;
   }
 }
