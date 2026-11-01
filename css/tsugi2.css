@@ -1526,3 +1526,93 @@ li.tsugi-lessons-module-lti[id^="tsugi-rl-"] {
     background-color: #fff;
     background-clip: border-box;
 }
+
+/* Student step checkboxes. State lives in localStorage, not on the server.
+   Names are tsugi-step so they do not collide with Bootstrap. */
+input.tsugi-step-box {
+  width: 1rem;
+  height: 1rem;
+  margin: 0 0.45rem 0.12rem 0;
+  vertical-align: -0.15em;
+  cursor: pointer;
+  accent-color: #2e7d32;
+}
+
+h1.tsugi-step input.tsugi-step-box,
+h2.tsugi-step input.tsugi-step-box,
+h3.tsugi-step input.tsugi-step-box {
+  vertical-align: middle;
+}
+
+input.tsugi-step-box:focus-visible {
+  outline: 2px solid #1565c0;
+  outline-offset: 2px;
+}
+
+.tsugi-step.tsugi-step-done {
+  box-shadow: inset 3px 0 0 #2e7d32;
+}
+
+.tsugi-step.tsugi-step-current {
+  box-shadow: inset 3px 0 0 #1565c0;
+  background: #f5f9fd;
+}
+
+ul > li.tsugi-step {
+  list-style: none;
+}
+
+#tsugi-step-progress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.75rem;
+  clear: both;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  margin: 0.2rem 0 1rem;
+  padding: 0.4rem 0.65rem;
+  background: #f7f7f8;
+  border: 1px solid #e2e2e6;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  font-size: 0.92rem;
+}
+
+#tsugi-step-progress progress {
+  width: 7rem;
+  height: 0.7rem;
+  vertical-align: middle;
+}
+
+#tsugi-step-progress .tsugi-step-progress-note {
+  color: #666;
+  font-size: 0.82rem;
+}
+
+#tsugi-step-progress button {
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.12rem 0.55rem;
+  cursor: pointer;
+}
+
+#tsugi-step-progress button:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+#tsugi-step-progress button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@media print {
+  #tsugi-step-progress {
+    display: none;
+  }
+}

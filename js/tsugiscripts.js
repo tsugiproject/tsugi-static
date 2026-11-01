@@ -1048,3 +1048,222 @@ function tsugiCheckFileMaxSize () {
         });
     });
 }
+
+/* Student step checkboxes for any Tsugi page.
+   A box is stored under a key built from where it sits in the page
+   (an XPath-style path from #tsugi-step-root, or from body) plus the
+   step text. Checks stay in localStorage. */
+(function () {
+  if (window.__tsugiStep) return;
+  window.__tsugiStep = true;
+
+  function tsugiStepStart() {
+    var root = document.getElementById('tsugi-step-root');
+    var boxes = root
+      ? root.querySelectorAll('input.tsugi-step-box')
+      : document.querySelectorAll('input.tsugi-step-box');
+    if (!boxes.length) return;
+    if (!root) root = document.body;
+
+    var pageKey = 'tsugi-step:' + location.pathname;
+
+    function tsugiStepHost(box) {
+      return box.closest('.tsugi-step') || box.parentElement;
+    }
+
+    function tsugiStepPath(box) {
+      var node = tsugiStepHost(box);
+      var parts = [];
+      while (node && node !== root) {
+        var index = 1;
+        var sib = node;
+        while ((sib = sib.previousElementSibling)) {
+          if (sib.tagName === node.tagName) index++;
+        }
+        parts.unshift(node.tagName.toLowerCase() + '[' + index + ']');
+        node = node.parentElement;
+      }
+      return parts.join('/');
+    }
+
+    function tsugiStepText(box) {
+      var host = tsugiStepHost(box);
+      var clone = host.cloneNode(true);
+      var nested = clone.querySelectorAll('input.tsugi-step-box');
+      for (var i = 0; i < nested.length; i++) nested[i].remove();
+      return (clone.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 180);
+    }
+
+    function tsugiStepReadKey(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function tsugiStepLoad() {
+      var raw = tsugiStepReadKey(pageKey);
+      if (!raw) raw = tsugiStepReadKey('dj4e-steps:' + location.pathname);
+      if (!raw) return { v: 1, steps: {} };
+      try {
+        var data = JSON.parse(raw);
+        if (!data || typeof data !== 'object' || !data.steps) return { v: 1, steps: {} };
+        return data;
+      } catch (e) {
+        return { v: 1, steps: {} };
+      }
+    }
+
+    function tsugiStepSave(data) {
+      try {
+        localStorage.setItem(pageKey, JSON.stringify(data));
+      } catch (e) {}
+    }
+
+    function tsugiStepPaint(box) {
+      var host = tsugiStepHost(box);
+      if (host) host.classList.toggle('tsugi-step-done', box.checked);
+    }
+
+    var data = tsugiStepLoad();
+    var stored = data.steps;
+    var storedByText = {};
+    Object.keys(stored).forEach(function (path) {
+      var rec = stored[path];
+      if (!rec || !rec.text) return;
+      (storedByText[rec.text] = storedByText[rec.text] || []).push(path);
+    });
+
+    var infos = [];
+    var pageByText = {};
+    for (var i = 0; i < boxes.length; i++) {
+      var box = boxes[i];
+      var text = tsugiStepText(box);
+      var path = tsugiStepPath(box);
+      var info = { box: box, path: path, text: text };
+      infos.push(info);
+      (pageByText[text] = pageByText[text] || []).push(info);
+      box.setAttribute('aria-label', text ? ('Mark done: ' + text.slice(0, 120)) : 'Mark this step done');
+    }
+
+    var migrated = false;
+    infos.forEach(function (info) {
+      var rec = stored[info.path];
+      if (rec && rec.text === info.text) {
+        info.box.checked = !!rec.done;
+        return;
+      }
+      var paths = storedByText[info.text] || [];
+      var onPage = pageByText[info.text] || [];
+      if (paths.length === 1 && onPage.length === 1 && stored[paths[0]]) {
+        var old = stored[paths[0]];
+        info.box.checked = !!old.done;
+        delete stored[paths[0]];
+        stored[info.path] = { done: !!old.done, text: info.text };
+        migrated = true;
+      }
+    });
+    if (migrated) tsugiStepSave(data);
+
+    function tsugiStepFirstOpen() {
+      for (var n = 0; n < boxes.length; n++) {
+        if (!boxes[n].checked) return boxes[n];
+      }
+      return null;
+    }
+
+    function tsugiStepMarkCurrent() {
+      var hosts = root.querySelectorAll('.tsugi-step-current');
+      for (var n = 0; n < hosts.length; n++) hosts[n].classList.remove('tsugi-step-current');
+      var done = 0;
+      for (var i = 0; i < boxes.length; i++) if (boxes[i].checked) done++;
+      if (done === 0 || done === boxes.length) return;
+      var open = tsugiStepFirstOpen();
+      var host = open && tsugiStepHost(open);
+      if (host) host.classList.add('tsugi-step-current');
+    }
+
+    function tsugiStepUpdateProgress() {
+      var done = 0;
+      for (var i = 0; i < boxes.length; i++) if (boxes[i].checked) done++;
+      var total = boxes.length;
+      meter.max = total;
+      meter.value = done;
+      if (done === total) {
+        label.textContent = 'All ' + total + (total === 1 ? ' step marked' : ' steps marked');
+      } else {
+        label.textContent = done + ' of ' + total + (total === 1 ? ' step marked' : ' steps marked');
+      }
+      nextBtn.disabled = done === total;
+      clearBtn.disabled = done === 0;
+    }
+
+    infos.forEach(function (info) {
+      tsugiStepPaint(info.box);
+      info.box.addEventListener('change', function () {
+        var fresh = tsugiStepLoad();
+        fresh.steps[info.path] = { done: info.box.checked, text: info.text };
+        tsugiStepSave(fresh);
+        data = fresh;
+        stored = fresh.steps;
+        tsugiStepPaint(info.box);
+        tsugiStepMarkCurrent();
+        tsugiStepUpdateProgress();
+      });
+    });
+
+    var bar = document.createElement('div');
+    bar.id = 'tsugi-step-progress';
+    bar.setAttribute('role', 'region');
+    bar.setAttribute('aria-label', 'Step progress');
+    bar.innerHTML =
+      '<progress id="tsugi-step-progress-bar" value="0" max="1"></progress>' +
+      '<span id="tsugi-step-progress-label" aria-live="polite"></span>' +
+      '<span class="tsugi-step-progress-note">Saved in this browser</span>' +
+      '<button type="button" id="tsugi-step-next">Next open step</button>' +
+      '<button type="button" id="tsugi-step-clear">Clear checks</button>';
+    var anchor = document.getElementById('tsugi-step-root');
+    if (anchor && anchor.parentNode) {
+      anchor.parentNode.insertBefore(bar, anchor);
+    } else {
+      var firstHost = tsugiStepHost(boxes[0]);
+      if (firstHost && firstHost.parentNode) firstHost.parentNode.insertBefore(bar, firstHost);
+    }
+
+    var label = document.getElementById('tsugi-step-progress-label');
+    var meter = document.getElementById('tsugi-step-progress-bar');
+    var nextBtn = document.getElementById('tsugi-step-next');
+    var clearBtn = document.getElementById('tsugi-step-clear');
+
+    nextBtn.addEventListener('click', function () {
+      var open = tsugiStepFirstOpen();
+      if (!open) return;
+      var host = tsugiStepHost(open);
+      if (host && host.scrollIntoView) host.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      open.focus();
+    });
+
+    clearBtn.addEventListener('click', function () {
+      if (!window.confirm('Clear all step checks on this page? This only affects this browser.')) return;
+      for (var i = 0; i < boxes.length; i++) {
+        boxes[i].checked = false;
+        tsugiStepPaint(boxes[i]);
+      }
+      tsugiStepSave({ v: 1, steps: {} });
+      data = { v: 1, steps: {} };
+      stored = data.steps;
+      tsugiStepMarkCurrent();
+      tsugiStepUpdateProgress();
+    });
+
+    tsugiStepMarkCurrent();
+    tsugiStepUpdateProgress();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', tsugiStepStart);
+  } else {
+    tsugiStepStart();
+  }
+})();
