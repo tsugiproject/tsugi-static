@@ -1282,9 +1282,16 @@ function tsugiCheckFileMaxSize () {
     bar.innerHTML =
       '<progress id="tsugi-step-progress-bar" value="0" max="1"></progress>' +
       '<span id="tsugi-step-progress-label" aria-live="polite"></span>' +
-      '<span class="tsugi-step-progress-note">Saved in this browser</span>' +
       '<button type="button" id="tsugi-step-next">Next open box</button>' +
-      '<button type="button" id="tsugi-step-clear">Clear checks</button>';
+      '<button type="button" id="tsugi-step-clear">Clear checks</button>' +
+      '<button type="button" id="tsugi-step-info" class="tsugi-step-info" aria-expanded="false" aria-controls="tsugi-step-info-panel" aria-label="About these checkboxes">' +
+        '<i class="fa fa-info-circle" aria-hidden="true"></i>' +
+      '</button>' +
+      '<p id="tsugi-step-info-panel" class="tsugi-step-info-panel" hidden>' +
+        'These checkboxes are for your use. They are not stored on the server. They are stored in your browser. ' +
+        'If you come back to this page in the same browser, you will see your checkboxes. ' +
+        'If you come back to this page in a different browser, you will have a different set of checkboxes.' +
+      '</p>';
     var anchor = document.getElementById('tsugi-step-root');
     if (anchor && anchor.parentNode) {
       anchor.parentNode.insertBefore(bar, anchor);
@@ -1297,6 +1304,8 @@ function tsugiCheckFileMaxSize () {
     var meter = document.getElementById('tsugi-step-progress-bar');
     var nextBtn = document.getElementById('tsugi-step-next');
     var clearBtn = document.getElementById('tsugi-step-clear');
+    var infoBtn = document.getElementById('tsugi-step-info');
+    var infoPanel = document.getElementById('tsugi-step-info-panel');
 
     nextBtn.addEventListener('click', function () {
       var open = tsugiStepFirstOpen();
@@ -1304,6 +1313,12 @@ function tsugiCheckFileMaxSize () {
       var host = tsugiStepHost(open);
       if (host && host.scrollIntoView) host.scrollIntoView({ behavior: 'smooth', block: 'center' });
       open.focus();
+    });
+
+    infoBtn.addEventListener('click', function () {
+      var open = infoBtn.getAttribute('aria-expanded') === 'true';
+      infoBtn.setAttribute('aria-expanded', open ? 'false' : 'true');
+      infoPanel.hidden = open;
     });
 
     clearBtn.addEventListener('click', function () {
