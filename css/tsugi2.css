@@ -1562,7 +1562,8 @@ ul > li.tsugi-step {
   list-style: none;
 }
 
-#tsugi-step-progress {
+#tsugi-step-progress,
+.tsugi-step-progress {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1580,26 +1581,30 @@ ul > li.tsugi-step {
   font-size: 0.92rem;
 }
 
-#tsugi-step-progress progress {
+#tsugi-step-progress progress,
+.tsugi-step-progress progress {
   width: 7rem;
   height: 0.7rem;
   vertical-align: middle;
 }
 
-#tsugi-step-progress .tsugi-step-info {
+#tsugi-step-progress .tsugi-step-info,
+.tsugi-step-progress .tsugi-step-info {
   margin-left: auto;
   padding: 0.12rem 0.45rem;
   line-height: 1;
   color: #444;
 }
 
-#tsugi-step-progress .tsugi-step-info[aria-expanded="true"] {
+#tsugi-step-progress .tsugi-step-info[aria-expanded="true"],
+.tsugi-step-progress .tsugi-step-info[aria-expanded="true"] {
   background: #e8eef6;
   border-color: #1565c0;
   color: #1565c0;
 }
 
-#tsugi-step-progress .tsugi-step-info-panel {
+#tsugi-step-progress .tsugi-step-info-panel,
+.tsugi-step-progress .tsugi-step-info-panel {
   flex: 1 0 100%;
   margin: 0.15rem 0 0.05rem;
   color: #444;
@@ -1607,7 +1612,8 @@ ul > li.tsugi-step {
   line-height: 1.45;
 }
 
-#tsugi-step-progress button {
+#tsugi-step-progress button,
+.tsugi-step-progress button {
   font: inherit;
   font-size: 0.85rem;
   line-height: 1.4;
@@ -1618,17 +1624,20 @@ ul > li.tsugi-step {
   cursor: pointer;
 }
 
-#tsugi-step-progress button:hover:not(:disabled) {
+#tsugi-step-progress button:hover:not(:disabled),
+.tsugi-step-progress button:hover:not(:disabled) {
   background: #f0f0f0;
 }
 
-#tsugi-step-progress button:disabled {
+#tsugi-step-progress button:disabled,
+.tsugi-step-progress button:disabled {
   opacity: 0.45;
   cursor: default;
 }
 
 @media print {
   #tsugi-step-progress,
+  .tsugi-step-progress,
   input.tsugi-step-box {
     display: none;
   }

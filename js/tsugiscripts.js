@@ -1057,15 +1057,47 @@ function tsugiCheckFileMaxSize () {
   if (window.__tsugiStep) return;
   window.__tsugiStep = true;
 
-  function tsugiStepStart() {
-    var root = document.getElementById('tsugi-step-root');
-    var boxes = root
-      ? root.querySelectorAll('input.tsugi-step-box')
-      : document.querySelectorAll('input.tsugi-step-box');
-    if (!boxes.length) return;
-    if (!root) root = document.body;
+  function tsugiStepPageKey(root) {
+    var anchor = root.getAttribute('data-tsugi-step-key') || '';
+    if (!anchor) return 'tsugi-step:' + location.pathname;
+    var path = location.pathname;
+    var m = path.match(/^(.*)\/(?:lessons|content|outline)(?:\/|$)/);
+    var prefix = m ? m[1] : '';
+    return 'tsugi-step-module:' + prefix + ':' + anchor;
+  }
 
-    var pageKey = 'tsugi-step:' + location.pathname;
+  function tsugiStepFallbackKeys(root) {
+    var anchor = root.getAttribute('data-tsugi-step-key') || '';
+    var keys = [];
+    if (!anchor) return keys;
+    var path = location.pathname;
+    var m = path.match(/^(.*)\/(?:lessons|content|outline)(?:\/|$)/);
+    var prefix = m ? m[1] : '';
+    var views = ['lessons', 'content'];
+    for (var i = 0; i < views.length; i++) {
+      var modulePath = prefix + '/' + views[i] + '/' + anchor;
+      var key = 'tsugi-step:' + modulePath;
+      if (modulePath === path) keys.unshift(key);
+      else keys.push(key);
+    }
+    return keys;
+  }
+
+  function tsugiStepStart() {
+    var roots = document.querySelectorAll('[data-tsugi-step-root]');
+    if (!roots.length) {
+      var legacy = document.getElementById('tsugi-step-root');
+      if (legacy) tsugiStepBind(legacy);
+      return;
+    }
+    for (var r = 0; r < roots.length; r++) tsugiStepBind(roots[r]);
+  }
+
+  function tsugiStepBind(root) {
+    var boxes = root.querySelectorAll('input.tsugi-step-box');
+    if (!boxes.length) return;
+
+    var pageKey = tsugiStepPageKey(root);
 
     function tsugiStepHost(box) {
       return box.closest('.tsugi-step') || box.parentElement;
@@ -1102,14 +1134,17 @@ function tsugiCheckFileMaxSize () {
       }
     }
 
+    var imported = false;
     function tsugiStepLoad() {
       var raw = tsugiStepReadKey(pageKey);
       if (!raw) {
-        var older = ['tsugi-steps:' + location.pathname, 'dj4e-steps:' + location.pathname];
+        var older = tsugiStepFallbackKeys(root);
+        older.push('tsugi-steps:' + location.pathname);
+        older.push('dj4e-steps:' + location.pathname);
         for (var k = 0; k < older.length; k++) {
           raw = tsugiStepReadKey(older[k]);
           if (!raw) continue;
-          try { localStorage.setItem(pageKey, raw); } catch (e) {}
+          imported = true;
           break;
         }
       }
@@ -1172,7 +1207,7 @@ function tsugiCheckFileMaxSize () {
         migrated = true;
       }
     });
-    if (migrated) tsugiStepSave(data);
+    if (migrated || imported) tsugiStepSave(data);
 
     function tsugiStepFirstOpen() {
       for (var n = 0; n < boxes.length; n++) {
@@ -1276,36 +1311,30 @@ function tsugiCheckFileMaxSize () {
     });
 
     var bar = document.createElement('div');
-    bar.id = 'tsugi-step-progress';
+    bar.className = 'tsugi-step-progress';
     bar.setAttribute('role', 'region');
     bar.setAttribute('aria-label', 'Progress');
     bar.innerHTML =
-      '<progress id="tsugi-step-progress-bar" value="0" max="1"></progress>' +
-      '<span id="tsugi-step-progress-label" aria-live="polite"></span>' +
-      '<button type="button" id="tsugi-step-next">Next open box</button>' +
-      '<button type="button" id="tsugi-step-clear">Clear checks</button>' +
-      '<button type="button" id="tsugi-step-info" class="tsugi-step-info" aria-expanded="false" aria-controls="tsugi-step-info-panel" aria-label="About these checkboxes">' +
+      '<progress class="tsugi-step-progress-bar" value="0" max="1"></progress>' +
+      '<span class="tsugi-step-progress-label" aria-live="polite"></span>' +
+      '<button type="button" class="tsugi-step-next">Next open box</button>' +
+      '<button type="button" class="tsugi-step-clear">Clear checks</button>' +
+      '<button type="button" class="tsugi-step-info" aria-expanded="false" aria-label="About these checkboxes">' +
         '<i class="fa fa-info-circle" aria-hidden="true"></i>' +
       '</button>' +
-      '<p id="tsugi-step-info-panel" class="tsugi-step-info-panel" hidden>' +
+      '<p class="tsugi-step-info-panel" hidden>' +
         'These checkboxes are for your use. They are not stored on the server. They are stored in your browser. ' +
         'If you come back to this page in the same browser, you will see your checkboxes. ' +
         'If you come back to this page in a different browser, you will have a different set of checkboxes.' +
       '</p>';
-    var anchor = document.getElementById('tsugi-step-root');
-    if (anchor && anchor.parentNode) {
-      anchor.parentNode.insertBefore(bar, anchor);
-    } else {
-      var firstHost = tsugiStepHost(boxes[0]);
-      if (firstHost && firstHost.parentNode) firstHost.parentNode.insertBefore(bar, firstHost);
-    }
+    if (root.parentNode) root.parentNode.insertBefore(bar, root);
 
-    var label = document.getElementById('tsugi-step-progress-label');
-    var meter = document.getElementById('tsugi-step-progress-bar');
-    var nextBtn = document.getElementById('tsugi-step-next');
-    var clearBtn = document.getElementById('tsugi-step-clear');
-    var infoBtn = document.getElementById('tsugi-step-info');
-    var infoPanel = document.getElementById('tsugi-step-info-panel');
+    var label = bar.querySelector('.tsugi-step-progress-label');
+    var meter = bar.querySelector('.tsugi-step-progress-bar');
+    var nextBtn = bar.querySelector('.tsugi-step-next');
+    var clearBtn = bar.querySelector('.tsugi-step-clear');
+    var infoBtn = bar.querySelector('.tsugi-step-info');
+    var infoPanel = bar.querySelector('.tsugi-step-info-panel');
 
     nextBtn.addEventListener('click', function () {
       var open = tsugiStepFirstOpen();
