@@ -950,8 +950,9 @@ ul.pager.tsugi-lessons-pager > li:last-child {
 }
 
 /* --------------------------------------------------------------------------
-   Lessons UI — assignment due badges + module progress (Tsugi\UI\Lessons)
-   Covers: assignments tool list, all-modules cards, single-module title, LTI rows.
+   Progress badges. One size for quiz rows, LTI rows, module cards, the
+   assignments list, and the home due list. rem so a smaller parent cannot
+   shrink the text.
    -------------------------------------------------------------------------- */
 :root {
   --tsugi-lesson-badge-fs: 0.875rem;
@@ -961,30 +962,28 @@ ul.pager.tsugi-lessons-pager > li:last-child {
   --tsugi-lesson-badge-radius: 0.35rem;
   --tsugi-lesson-badge-margin: 0.5rem;
   --tsugi-lesson-due-ok-bg: #d4edda;
-  --tsugi-lesson-due-ok-fg: #155724;
-  --tsugi-lesson-due-ok-border: #b8dabc;
+  --tsugi-lesson-due-ok-fg: #0c3d17;
+  --tsugi-lesson-due-ok-border: #0c3d17;
   --tsugi-lesson-due-progress-bg: #cfe2ff;
   --tsugi-lesson-due-progress-fg: #084298;
   --tsugi-lesson-due-progress-border: #9ec5fe;
   --tsugi-lesson-due-late-bg: #f8d7da;
   --tsugi-lesson-due-late-fg: #721c24;
-  --tsugi-lesson-due-late-border: #f1bfc4;
+  --tsugi-lesson-due-late-border: #721c24;
   --tsugi-lesson-due-soon-bg: #fff3cd;
-  --tsugi-lesson-due-soon-fg: #856404;
-  --tsugi-lesson-due-soon-border: #ffeaa7;
+  --tsugi-lesson-due-soon-fg: #5c4500;
+  --tsugi-lesson-due-soon-border: #5c4500;
   --tsugi-lesson-due-neutral-bg: #e9ecef;
   --tsugi-lesson-due-neutral-fg: #495057;
   --tsugi-lesson-due-neutral-border: #dee2e6;
   /* Upcoming (due in more than 7 days): subtle grey, not the same green as completed */
   --tsugi-lesson-due-future-bg: #e9ecef;
-  --tsugi-lesson-due-future-fg: #212529;
-  --tsugi-lesson-due-future-border: #dee2e6;
+  --tsugi-lesson-due-future-fg: #121417;
+  --tsugi-lesson-due-future-border: #121417;
 }
 
-.tsugi-assignments-item .tsugi-assignments-due-badge,
-.tsugi-lessons-module-card-link .tsugi-assignments-due-badge,
-.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-badge,
-.tsugi-lessons-module-lti .tsugi-assignments-due-badge {
+.tsugi-progress-badge,
+.tsugi-assignments-due-badge {
   display: inline-block;
   vertical-align: middle;
   margin-left: var(--tsugi-lesson-badge-margin);
@@ -997,100 +996,66 @@ ul.pager.tsugi-lessons-pager > li:last-child {
   box-sizing: border-box;
 }
 
-/* Module percent-complete badges (Tsugi\UI\Lessons::echoModuleAggregateProgressBadge); keep styling here, not inline in PHP. */
-.tsugi-lessons-module-card-link .progress-badge,
-.tsugi-lessons-module-title-cardmatch .progress-badge {
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: var(--tsugi-lesson-badge-margin);
-  padding: var(--tsugi-lesson-badge-pad-y) var(--tsugi-lesson-badge-pad-x);
-  border-radius: var(--tsugi-lesson-badge-radius);
-  font-size: var(--tsugi-lesson-badge-fs);
-  font-weight: 600;
-  line-height: var(--tsugi-lesson-badge-lh);
-  border: 1px solid transparent;
-  box-sizing: border-box;
-}
-
-.tsugi-lessons-module-card-link .progress-badge-check,
-.tsugi-lessons-module-title-cardmatch .progress-badge-check {
+.tsugi-progress-badge-check {
   background: var(--tsugi-lesson-due-ok-bg);
   color: var(--tsugi-lesson-due-ok-fg);
   border-color: var(--tsugi-lesson-due-ok-border);
 }
 
-.tsugi-lessons-module-card-link .progress-badge-percent,
-.tsugi-lessons-module-title-cardmatch .progress-badge-percent {
+.tsugi-progress-badge-percent {
   background: var(--tsugi-lesson-due-progress-bg);
   color: var(--tsugi-lesson-due-progress-fg);
   border-color: var(--tsugi-lesson-due-progress-border);
 }
 
-.tsugi-assignments-item .tsugi-assignments-due-state,
-.tsugi-lessons-module-lti .tsugi-assignments-due-state,
-.tsugi-lessons-module-card-link .tsugi-assignments-due-state,
-.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-state {
+.tsugi-progress-badge-not-started {
+  background: var(--tsugi-lesson-due-neutral-bg);
+  color: var(--tsugi-lesson-due-neutral-fg);
+  border-color: var(--tsugi-lesson-due-neutral-border);
+  font-weight: 500;
+}
+
+.tsugi-assignments-due-state {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   font-size: 1em;
 }
 
-.tsugi-assignments-item .tsugi-assignments-due-detail,
-.tsugi-lessons-module-lti .tsugi-assignments-due-detail,
-.tsugi-lessons-module-card-link .tsugi-assignments-due-detail,
-.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-detail {
+.tsugi-assignments-due-detail {
   font-weight: 500;
   font-size: 1em;
 }
 
-.tsugi-assignments-item .tsugi-assignments-due-lbl,
-.tsugi-lessons-module-lti .tsugi-assignments-due-lbl,
-.tsugi-lessons-module-card-link .tsugi-assignments-due-lbl,
-.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-lbl {
+.tsugi-assignments-due-lbl {
   font-weight: 600;
 }
 
-.tsugi-assignments-item .tsugi-assignments-due-completed,
-.tsugi-lessons-module-lti .tsugi-assignments-due-completed,
-.tsugi-lessons-module-card-link .tsugi-assignments-due-completed,
-.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-completed {
+.tsugi-assignments-due-badge.tsugi-assignments-due-completed {
   background: var(--tsugi-lesson-due-ok-bg);
   color: var(--tsugi-lesson-due-ok-fg);
   border-color: var(--tsugi-lesson-due-ok-border);
 }
 
-.tsugi-assignments-item .tsugi-assignments-due-future,
-.tsugi-lessons-module-lti .tsugi-assignments-due-future,
-.tsugi-lessons-module-card-link .tsugi-assignments-due-future,
-.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-future {
+.tsugi-assignments-due-badge.tsugi-assignments-due-future {
   background: var(--tsugi-lesson-due-future-bg);
   color: var(--tsugi-lesson-due-future-fg);
   border-color: var(--tsugi-lesson-due-future-border);
 }
 
-.tsugi-assignments-item .tsugi-assignments-due-past,
-.tsugi-lessons-module-lti .tsugi-assignments-due-past,
-.tsugi-lessons-module-card-link .tsugi-assignments-due-past,
-.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-past {
+.tsugi-assignments-due-badge.tsugi-assignments-due-past {
   background: var(--tsugi-lesson-due-late-bg);
   color: var(--tsugi-lesson-due-late-fg);
   border-color: var(--tsugi-lesson-due-late-border);
 }
 
-.tsugi-assignments-item .tsugi-assignments-due-soon,
-.tsugi-lessons-module-lti .tsugi-assignments-due-soon,
-.tsugi-lessons-module-card-link .tsugi-assignments-due-soon,
-.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-soon {
+.tsugi-assignments-due-badge.tsugi-assignments-due-soon {
   background: var(--tsugi-lesson-due-soon-bg);
   color: var(--tsugi-lesson-due-soon-fg);
   border-color: var(--tsugi-lesson-due-soon-border);
 }
 
-.tsugi-assignments-item .tsugi-assignments-due-neutral,
-.tsugi-lessons-module-lti .tsugi-assignments-due-neutral,
-.tsugi-lessons-module-card-link .tsugi-assignments-due-neutral,
-.tsugi-lessons-module-title-cardmatch .tsugi-assignments-due-neutral {
+.tsugi-assignments-due-badge.tsugi-assignments-due-neutral {
   background: var(--tsugi-lesson-due-neutral-bg);
   color: var(--tsugi-lesson-due-neutral-fg);
   border-color: var(--tsugi-lesson-due-neutral-border);
