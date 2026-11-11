@@ -585,15 +585,32 @@ label.h5 {
 .navbar-nav > li > .dropdown-menu {
     margin-top: 0.43rem;
 }
-.navbar-nav > li.dropdown > a img {
+.navbar-nav > li.dropdown > a img,
+.navbar-nav > li.dropdown > button img {
     height: 3.35rem;
 }
 .navbar-default .nav > li.dropdown > a.dropdown-img,
-.navbar-inverse .nav > li.dropdown > a.dropdown-img {
+.navbar-default .nav > li.dropdown > button.dropdown-img,
+.navbar-inverse .nav > li.dropdown > a.dropdown-img,
+.navbar-inverse .nav > li.dropdown > button.dropdown-img {
     margin-top: 0;
     margin-bottom: 0;
     padding-top: 0;
     padding-bottom: 0;
+}
+.navbar-inverse .nav > li.dropdown > button.dropdown-img {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    color: var(--secondary-menu, #fff);
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+}
+.navbar-inverse .nav > li.dropdown > button.dropdown-img:focus,
+.navbar-inverse .nav > li.dropdown > button.dropdown-img:focus-visible {
+    outline: 2px solid var(--secondary-menu, #fff);
+    outline-offset: 2px;
 }
 
 .flx-cntnr {
