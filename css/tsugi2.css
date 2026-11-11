@@ -1255,20 +1255,51 @@ li.tsugi-lessons-module-lti[id^="tsugi-rl-"] {
     border: 1px grey solid;
 }
 
-/* Skip link for accessibility */
+/* Skip link for accessibility.
+   Centered under the fixed menu (about 72px from the top) so it reads
+   as its own control, not a corner of the navbar. z-index stays above
+   .navbar-fixed-top (1030) and under the modal backdrop (1040).
+   a:focus would fade it (opacity 0.8) and recolor it. */
 .skip-link {
-    position: absolute;
-    left: -9999px;
-    z-index: 999;
-    padding: 1rem 1.5rem;
-    background: var(--primary, #337ab7);
-    color: white;
+    position: fixed;
+    top: 72px;
+    left: 50%;
+    z-index: 1031;
+    transform: translate(-50%, calc(-100% - 90px));
+    padding: 0.6rem 1.35rem;
+    background: #fff;
+    color: var(--primary, #337ab7);
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    font-weight: 600;
+    letter-spacing: 0.01em;
     text-decoration: none;
-    border-radius: 0 0 4px 0;
+    border: 2px solid var(--primary, #337ab7);
+    border-radius: 999px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+    transition: transform 0.16s ease, opacity 0.16s ease, box-shadow 0.16s ease;
 }
-.skip-link:focus {
-    left: 0;
-    top: 0;
+.skip-link:focus,
+.skip-link:focus-visible {
+    transform: translate(-50%, 0);
+    opacity: 1;
+    pointer-events: auto;
+    color: var(--primary, #337ab7);
+    text-decoration: none;
+    outline: 3px solid var(--primary, #337ab7);
+    outline-offset: 3px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+}
+.skip-link-mark {
+    margin-left: 0.4em;
+    letter-spacing: 0;
+    font-weight: 400;
+}
+@media (prefers-reduced-motion: reduce) {
+    .skip-link {
+        transition: none;
+    }
 }
 
 /* Desktop: keep Bootstrap float layout; only tweak vertical rhythm + right cluster */
